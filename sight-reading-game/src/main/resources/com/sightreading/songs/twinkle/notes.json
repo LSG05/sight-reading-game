@@ -4,79 +4,61 @@
       "lineIndex": 0,
       "imageFile": "line1.png",
       "notes": [
-        { "targetTimeMs": 0,    "pixelX": 60,  "noteName": "C5" },
-        { "targetTimeMs": 750,  "pixelX": 160, "noteName": "C5" },
-        { "targetTimeMs": 1500, "pixelX": 260, "noteName": "G5" },
-        { "targetTimeMs": 2250, "pixelX": 360, "noteName": "G5" },
-        { "targetTimeMs": 3000, "pixelX": 460, "noteName": "A5" },
-        { "targetTimeMs": 3750, "pixelX": 560, "noteName": "A5" },
-        { "targetTimeMs": 4500, "pixelX": 700, "noteName": "G5" }
+        { "targetTimeMs": 3000, "pixelX": 86,  "noteName": "C" },
+        { "targetTimeMs": 3750, "pixelX": 131, "noteName": "C" },
+        { "targetTimeMs": 4500, "pixelX": 173, "noteName": "G" },
+        { "targetTimeMs": 5250, "pixelX": 214, "noteName": "G" },
+        { "targetTimeMs": 6000, "pixelX": 268, "noteName": "A" },
+        { "targetTimeMs": 6750, "pixelX": 314, "noteName": "A" },
+        { "targetTimeMs": 7500, "pixelX": 360, "noteName": "G" },
+        { "targetTimeMs": 9000, "pixelX": 441, "noteName": "F" },
+        { "targetTimeMs": 9750, "pixelX": 484, "noteName": "F" },
+        { "targetTimeMs": 10500, "pixelX": 527, "noteName": "E" },
+        { "targetTimeMs": 11250, "pixelX": 571, "noteName": "E" },
+        { "targetTimeMs": 12000, "pixelX": 623, "noteName": "D" },
+        { "targetTimeMs": 12750, "pixelX": 671, "noteName": "D" },
+        { "targetTimeMs": 13500, "pixelX": 717, "noteName": "C" }
       ]
     },
     {
       "lineIndex": 1,
       "imageFile": "line2.png",
       "notes": [
-        { "targetTimeMs": 6000,  "pixelX": 60,  "noteName": "F5" },
-        { "targetTimeMs": 6750,  "pixelX": 160, "noteName": "F5" },
-        { "targetTimeMs": 7500,  "pixelX": 260, "noteName": "E5" },
-        { "targetTimeMs": 8250,  "pixelX": 360, "noteName": "E5" },
-        { "targetTimeMs": 9000,  "pixelX": 460, "noteName": "D5" },
-        { "targetTimeMs": 9750,  "pixelX": 560, "noteName": "D5" },
-        { "targetTimeMs": 10500, "pixelX": 700, "noteName": "C5" }
+        { "targetTimeMs": 15000, "pixelX": 67,  "noteName": "G" },
+        { "targetTimeMs": 15750, "pixelX": 110, "noteName": "G" },
+        { "targetTimeMs": 16500, "pixelX": 155, "noteName": "F" },
+        { "targetTimeMs": 17250, "pixelX": 197, "noteName": "F" },
+        { "targetTimeMs": 18000, "pixelX": 250, "noteName": "E" },
+        { "targetTimeMs": 18750, "pixelX": 298, "noteName": "E" },
+        { "targetTimeMs": 19500, "pixelX": 345, "noteName": "D" },
+        { "targetTimeMs": 21000, "pixelX": 429, "noteName": "G" },
+        { "targetTimeMs": 21750, "pixelX": 473, "noteName": "G" },
+        { "targetTimeMs": 22500, "pixelX": 519, "noteName": "F" },
+        { "targetTimeMs": 23250, "pixelX": 565, "noteName": "F" },
+        { "targetTimeMs": 24000, "pixelX": 619, "noteName": "E" },
+        { "targetTimeMs": 24750, "pixelX": 665, "noteName": "E" },
+        { "targetTimeMs": 25500, "pixelX": 712, "noteName": "D" }
       ]
     },
     {
       "lineIndex": 2,
       "imageFile": "line3.png",
       "notes": [
-        { "targetTimeMs": 12000, "pixelX": 60,  "noteName": "G5" },
-        { "targetTimeMs": 12750, "pixelX": 160, "noteName": "G5" },
-        { "targetTimeMs": 13500, "pixelX": 260, "noteName": "F5" },
-        { "targetTimeMs": 14250, "pixelX": 360, "noteName": "F5" },
-        { "targetTimeMs": 15000, "pixelX": 460, "noteName": "E5" },
-        { "targetTimeMs": 15750, "pixelX": 560, "noteName": "E5" },
-        { "targetTimeMs": 16500, "pixelX": 700, "noteName": "D5" }
-      ]
-    },
-    {
-      "lineIndex": 3,
-      "imageFile": "line4.png",
-      "notes": [
-        { "targetTimeMs": 18000, "pixelX": 60,  "noteName": "G5" },
-        { "targetTimeMs": 18750, "pixelX": 160, "noteName": "G5" },
-        { "targetTimeMs": 19500, "pixelX": 260, "noteName": "F5" },
-        { "targetTimeMs": 20250, "pixelX": 360, "noteName": "F5" },
-        { "targetTimeMs": 21000, "pixelX": 460, "noteName": "E5" },
-        { "targetTimeMs": 21750, "pixelX": 560, "noteName": "E5" },
-        { "targetTimeMs": 22500, "pixelX": 700, "noteName": "D5" }
-      ]
-    },
-    {
-      "lineIndex": 4,
-      "imageFile": "line5.png",
-      "notes": [
-        { "targetTimeMs": 24000, "pixelX": 60,  "noteName": "C5" },
-        { "targetTimeMs": 24750, "pixelX": 160, "noteName": "C5" },
-        { "targetTimeMs": 25500, "pixelX": 260, "noteName": "G5" },
-        { "targetTimeMs": 26250, "pixelX": 360, "noteName": "G5" },
-        { "targetTimeMs": 27000, "pixelX": 460, "noteName": "A5" },
-        { "targetTimeMs": 27750, "pixelX": 560, "noteName": "A5" },
-        { "targetTimeMs": 28500, "pixelX": 700, "noteName": "G5" }
-      ]
-    },
-    {
-      "lineIndex": 5,
-      "imageFile": "line6.png",
-      "notes": [
-        { "targetTimeMs": 30000, "pixelX": 60,  "noteName": "F5" },
-        { "targetTimeMs": 30750, "pixelX": 160, "noteName": "F5" },
-        { "targetTimeMs": 31500, "pixelX": 260, "noteName": "E5" },
-        { "targetTimeMs": 32250, "pixelX": 360, "noteName": "E5" },
-        { "targetTimeMs": 33000, "pixelX": 460, "noteName": "D5" },
-        { "targetTimeMs": 33750, "pixelX": 560, "noteName": "D5" },
-        { "targetTimeMs": 34500, "pixelX": 700, "noteName": "C5" }
+        { "targetTimeMs": 27000, "pixelX": 68,  "noteName": "C" },
+        { "targetTimeMs": 27750, "pixelX": 118, "noteName": "C" },
+        { "targetTimeMs": 28500, "pixelX": 163, "noteName": "G" },
+        { "targetTimeMs": 29250, "pixelX": 212, "noteName": "G" },
+        { "targetTimeMs": 30000, "pixelX": 269, "noteName": "A" },
+        { "targetTimeMs": 30750, "pixelX": 326, "noteName": "A" },
+        { "targetTimeMs": 31500, "pixelX": 383, "noteName": "G" },
+        { "targetTimeMs": 32250, "pixelX": 454, "noteName": "F" },
+        { "targetTimeMs": 33000, "pixelX": 494, "noteName": "F" },
+        { "targetTimeMs": 33750, "pixelX": 534, "noteName": "E" },
+        { "targetTimeMs": 34500, "pixelX": 578, "noteName": "E" },
+        { "targetTimeMs": 35250, "pixelX": 628, "noteName": "D" },
+        { "targetTimeMs": 36000, "pixelX": 673, "noteName": "D" },
+        { "targetTimeMs": 36750, "pixelX": 714, "noteName": "C" }
       ]
     }
-  ]
+    ]
 }
