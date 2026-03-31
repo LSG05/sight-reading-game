@@ -1,0 +1,82 @@
+{
+  "lines": [
+    {
+      "lineIndex": 0,
+      "imageFile": "line1.png",
+      "notes": [
+        { "targetTimeMs": 0,    "pixelX": 60,  "noteName": "C5" },
+        { "targetTimeMs": 750,  "pixelX": 160, "noteName": "C5" },
+        { "targetTimeMs": 1500, "pixelX": 260, "noteName": "G5" },
+        { "targetTimeMs": 2250, "pixelX": 360, "noteName": "G5" },
+        { "targetTimeMs": 3000, "pixelX": 460, "noteName": "A5" },
+        { "targetTimeMs": 3750, "pixelX": 560, "noteName": "A5" },
+        { "targetTimeMs": 4500, "pixelX": 700, "noteName": "G5" }
+      ]
+    },
+    {
+      "lineIndex": 1,
+      "imageFile": "line2.png",
+      "notes": [
+        { "targetTimeMs": 6000,  "pixelX": 60,  "noteName": "F5" },
+        { "targetTimeMs": 6750,  "pixelX": 160, "noteName": "F5" },
+        { "targetTimeMs": 7500,  "pixelX": 260, "noteName": "E5" },
+        { "targetTimeMs": 8250,  "pixelX": 360, "noteName": "E5" },
+        { "targetTimeMs": 9000,  "pixelX": 460, "noteName": "D5" },
+        { "targetTimeMs": 9750,  "pixelX": 560, "noteName": "D5" },
+        { "targetTimeMs": 10500, "pixelX": 700, "noteName": "C5" }
+      ]
+    },
+    {
+      "lineIndex": 2,
+      "imageFile": "line3.png",
+      "notes": [
+        { "targetTimeMs": 12000, "pixelX": 60,  "noteName": "G5" },
+        { "targetTimeMs": 12750, "pixelX": 160, "noteName": "G5" },
+        { "targetTimeMs": 13500, "pixelX": 260, "noteName": "F5" },
+        { "targetTimeMs": 14250, "pixelX": 360, "noteName": "F5" },
+        { "targetTimeMs": 15000, "pixelX": 460, "noteName": "E5" },
+        { "targetTimeMs": 15750, "pixelX": 560, "noteName": "E5" },
+        { "targetTimeMs": 16500, "pixelX": 700, "noteName": "D5" }
+      ]
+    },
+    {
+      "lineIndex": 3,
+      "imageFile": "line4.png",
+      "notes": [
+        { "targetTimeMs": 18000, "pixelX": 60,  "noteName": "G5" },
+        { "targetTimeMs": 18750, "pixelX": 160, "noteName": "G5" },
+        { "targetTimeMs": 19500, "pixelX": 260, "noteName": "F5" },
+        { "targetTimeMs": 20250, "pixelX": 360, "noteName": "F5" },
+        { "targetTimeMs": 21000, "pixelX": 460, "noteName": "E5" },
+        { "targetTimeMs": 21750, "pixelX": 560, "noteName": "E5" },
+        { "targetTimeMs": 22500, "pixelX": 700, "noteName": "D5" }
+      ]
+    },
+    {
+      "lineIndex": 4,
+      "imageFile": "line5.png",
+      "notes": [
+        { "targetTimeMs": 24000, "pixelX": 60,  "noteName": "C5" },
+        { "targetTimeMs": 24750, "pixelX": 160, "noteName": "C5" },
+        { "targetTimeMs": 25500, "pixelX": 260, "noteName": "G5" },
+        { "targetTimeMs": 26250, "pixelX": 360, "noteName": "G5" },
+        { "targetTimeMs": 27000, "pixelX": 460, "noteName": "A5" },
+        { "targetTimeMs": 27750, "pixelX": 560, "noteName": "A5" },
+        { "targetTimeMs": 28500, "pixelX": 700, "noteName": "G5" }
+      ]
+    },
+    {
+      "lineIndex": 5,
+      "imageFile": "line6.png",
+      "notes": [
+        { "targetTimeMs": 30000, "pixelX": 60,  "noteName": "F5" },
+        { "targetTimeMs": 30750, "pixelX": 160, "noteName": "F5" },
+        { "targetTimeMs": 31500, "pixelX": 260, "noteName": "E5" },
+        { "targetTimeMs": 32250, "pixelX": 360, "noteName": "E5" },
+        { "targetTimeMs": 33000, "pixelX": 460, "noteName": "D5" },
+        { "targetTimeMs": 33750, "pixelX": 560, "noteName": "D5" },
+        { "targetTimeMs": 34500, "pixelX": 700, "noteName": "C5" }
+      ]
+    }
+  ]
+}
