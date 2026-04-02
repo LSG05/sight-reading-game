@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Rectangle;
 
 public class GameController implements Initializable {
@@ -35,6 +36,9 @@ public class GameController implements Initializable {
     // declare index variables for iterating lines and notes
     private int noteIndexInLine = 0;
     private int currentLineIndex = 0;
+
+    // Input and UI handling, add ui controller soon
+    private InputHandler inputHandler;
 
     // Declare animationTimer for frame by frame activities
     private AnimationTimer animationTimer = new AnimationTimer() {
@@ -85,6 +89,14 @@ public class GameController implements Initializable {
         audioService.playSong();
         masterClock.start();
         animationTimer.start();
+
+        // 8. Closing Methods
+        if(currentLineIndex >= songData.lines.size()){
+            audioService.stopSong();
+            masterClock.stop();
+            animationTimer.stop();
+        }
+        
 
     }
 
@@ -172,6 +184,12 @@ public class GameController implements Initializable {
         if (currentLineIndex >= 0 && currentLineIndex < songData.lines.size()) {
             swapToLine(this.currentLineIndex);
         }
+    }
+
+    // handles keyboard press events
+    @FXML
+    public void onKeyPressed(KeyEvent event) {
+        inputHandler.handleKeyPressed(event);
     }
  
 }
