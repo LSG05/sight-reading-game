@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="900.0" prefWidth="1200.0" spacing="40.0" style="-fx-background-color: #2b2b2b;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sightreading.HomeController">
+   <children>
+      
+      <VBox alignment="CENTER" spacing="-10.0">
+         <children>
+            <Label text="SIGHT READING" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="72.0" />
+               </font>
+            </Label>
+            <Label text="RHYTHM GAME" textFill="#4488ff">
+               <font>
+                  <Font name="System Bold" size="48.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+
+      <Button fx:id="playButton" mnemonicParsing="false" onAction="#handlePlay" prefHeight="65.0" prefWidth="300.0" style="-fx-background-color: #4488ff; -fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-background-radius: 10;" text="Play" />
+      
+      <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="65.0" prefWidth="300.0" style="-fx-background-color: #555555; -fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-background-radius: 10;" text="Leaderboard" />
+      
+   </children>
+</VBox>
