@@ -10,7 +10,7 @@
       <AnchorPane fx:id="sheetMusicPane" layoutX="200.0" layoutY="300.0" prefHeight="75.0" prefWidth="800.0">
          <children>
             <Rectangle fx:id="hitBox" arcHeight="4.0" arcWidth="4.0" fill="#4488FF" height="75.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-            <ImageView fx:id="sheetMusicView" fitHeight="75.0" fitWidth="800.0" layoutX="262.0" layoutY="-37.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+            <ImageView fx:id="sheetMusicView" fitHeight="75.0" fitWidth="800.0" layoutX="262.0" layoutY="-37.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" opacity="0.5"/>
          </children>
       </AnchorPane>
    </children>
