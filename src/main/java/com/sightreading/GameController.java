@@ -174,6 +174,42 @@ public class GameController implements Initializable {
         }
     }
  
-}
+    // --- Phase 3 Added Cleanup ---
 
-// stop methods, make sure box is on top, implement separate thread for audioservice, edge cases and bounds + address delay, switch images
+    /**
+     * STOPS all background threads. 
+     */
+    private void cleanup() {
+        System.out.println("Cleaning up game threads...");
+        if (animationTimer != null) {
+            animationTimer.stop();
+        }
+        if (audioService != null) {
+            audioService.stopSong();
+        }
+        if (masterClock != null) {
+            masterClock.stop();
+        }
+    }
+
+    @FXML
+    private void handleExit() {
+        cleanup();
+        try {
+            Main.setRoot("home");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleRestart() {
+        cleanup();
+        try {
+            // To restart perfectly, reload the FXML scene from scratch
+            Main.setRoot("game");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
