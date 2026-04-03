@@ -39,6 +39,10 @@ public class HomeController {
 
     @FXML
     private void handleLeaderboard(ActionEvent event) {
-        System.out.println("Leaderboard button clicked.");
+        try {
+            Main.setRoot("leaderboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
