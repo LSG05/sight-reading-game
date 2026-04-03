@@ -11,6 +11,7 @@ import java.io.IOException;
 public class Main extends Application {
 
     private static Scene scene;
+    public static String playerName = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
