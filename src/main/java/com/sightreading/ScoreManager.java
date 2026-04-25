@@ -1,0 +1,59 @@
+package com.sightreading;
+
+import javafx.application.Platform;
+
+public class ScoreManager {
+    private int score = 0;
+    private int combo = 0;
+    private int multiplier = 1;
+    private GameController gameController;
+
+    public ScoreManager(GameController gameController) {
+        this.gameController = gameController;
+    }
+    
+    public void registerHit(long timingError){
+        String rating = "OKAY";
+        long absError = Math.abs(timingError);
+
+        // update rating based on timing error categories
+        if (absError <= 45) {
+            rating = "PERFECT";
+        } else if (absError <= 90) {
+            rating = "GREAT";
+        }
+
+        // penalty based on timing error (linear scale)
+        double penalty = (absError / 150.0) * 80.0;
+        int basePoints = (int) (100 - penalty);
+
+        // multiplier logic based on current combo
+        this.multiplier = (combo / 10) + 1;
+        if (this.multiplier > 10) {
+            this.multiplier = 10; // Cap multiplier at 10x
+        }
+
+        // score update
+        this.score += (basePoints * multiplier);
+        this.combo++;
+
+        // Update UI
+        // final to "lock" values in temporarily while inserted into platform runlater function
+        final int currentScore = this.score;
+        final int currentCombo = this.combo;
+        final String currentRating = rating;
+
+        Platform.runLater(() -> {
+            gameController.updateUI(currentScore, currentCombo, currentRating); // method to be updated later
+        });
+
+    }
+
+    public void registerMiss() {
+        this.combo = 0;
+        this.multiplier = 1;
+        Platform.runLater(() -> {
+            gameController.updateUI(this.score, this.combo, "MISS");
+        });
+    }
+}
