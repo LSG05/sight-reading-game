@@ -99,8 +99,8 @@ public class GameController implements Initializable {
         // }
 
         // initalize score manager and input handler with reference to this gamecontroller for ui updates
-        ScoreManager = new ScoreManager(this);
-        inputHandler = new InputHandler(this, ScoreManager);
+        scoreManager = new ScoreManager(this);
+        inputHandler = new InputHandler(this);
 
         // 6. Load Audio
         audioService.loadSong();
