@@ -37,6 +37,9 @@ public class GameController implements Initializable {
     private int noteIndexInLine = 0;
     private int currentLineIndex = 0;
 
+    // ms window for a note to be considered a hit, will be used in input handling
+    private final static int MISS_TOLERANCE_MS = 200; 
+
     // Input and UI handling, add ui controller soon
     private InputHandler inputHandler;
 
@@ -183,6 +186,19 @@ public class GameController implements Initializable {
     private void updateLineDisplay() {
         if (currentLineIndex >= 0 && currentLineIndex < songData.lines.size()) {
             swapToLine(this.currentLineIndex);
+        }
+    }
+
+    private void checkNoteExpiry(long elapsedMS) {
+        LineData currentLine = songData.lines.get(currentLineIndex);
+        NoteData currentNote = currentLine.notes.get(noteIndexInLine);
+
+        //If clock has passed the note's target time by more than the miss tolerance, mark it as missed and move on
+        if (!currentNote.processed && elapsedMS > (currentNote.targetTimeMs + MISS_TOLERANCE_MS)) {
+            currentNote.processed = true;
+            currentNote.isHit = false; 
+            ScoreManager.registerMiss();
+            System.out.println("Note EXPIRED and missed: " + currentNote.noteName);
         }
     }
 
