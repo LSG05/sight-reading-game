@@ -168,19 +168,23 @@ public class GameController implements Initializable {
         long nextNoteTime = notes.get(noteIndexInLine + 1).targetTimeMs;
         double noteXPrevDist = notes.get(noteIndexInLine).pixelX;
         double noteXNextDist = notes.get(noteIndexInLine + 1).pixelX;
+    }
 
-        double hitBoxPosition = noteXPrevDist + ((double)(elapsedMs-prevNoteTime)/(nextNoteTime-prevNoteTime))*(noteXNextDist - noteXPrevDist) - 50;
+    //new update line index method
+    private void advanceNoteIndex() {
+        LineData currentLine = songData.lines.get(currentLineIndex);
+        NoteData currentNote = currentLine.notes.get(noteIndexInLine);
 
-        // Update line index
-        if (elapsedMs >= nextNoteTime && noteIndexInLine < notes.size() - 1) {
-            noteIndexInLine++;
-        }
+        // Advance only if current note is processed
+        if (currentNote.processed) {
+            if (noteIndexInLine < currentLine.notes.size() -1) {
+                noteIndexInLine++;
+            } else if (currentLineIndex < songData.lines.size() -1) {
+                currentLineIndex++;
+                noteIndexInLine = 0;
+            }
+        } 
         
-        
-        System.out.println("noteIndexinLine " + noteIndexInLine);
-        System.out.println("currentLineIndex " + currentLineIndex);
-        System.out.println("Hitbox position " + hitBoxPosition);
-        return hitBoxPosition;
     }
 
     private void updateLineDisplay() {
