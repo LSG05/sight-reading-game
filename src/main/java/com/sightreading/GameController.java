@@ -43,6 +43,9 @@ public class GameController implements Initializable {
     // Input and UI handling, add ui controller soon
     private InputHandler inputHandler;
 
+    // Initialize ScoreManager with reference to this GameController for UI updates
+    private ScoreManager scoreManager;
+
     // Declare animationTimer for frame by frame activities
     private AnimationTimer animationTimer = new AnimationTimer() {
         @Override
@@ -94,6 +97,10 @@ public class GameController implements Initializable {
         //         }
         //     }
         // }
+
+        // initalize score manager and input handler with reference to this gamecontroller for ui updates
+        ScoreManager = new ScoreManager(this);
+        inputHandler = new InputHandler(this, ScoreManager);
 
         // 6. Load Audio
         audioService.loadSong();
@@ -156,8 +163,7 @@ public class GameController implements Initializable {
         // if (noteIndexInLine >= notes.size() - 1) {
         //     return notes.get(notes.size() - 1).pixelX;
         // }
-        if (currentLineIndex >= songData.lines.size() - 1 && 
-            noteIndexInLine >= notes.size() - 1) {
+        if (currentLineIndex >= songData.lines.size() - 1 && noteIndexInLine >= notes.size() - 1) {
             return notes.get(notes.size() - 1).pixelX;
         }
 
@@ -171,6 +177,10 @@ public class GameController implements Initializable {
         if (noteIndexInLine >= notes.size() - 1 && currentLineIndex < songData.lines.size() - 1) {
             currentLineIndex++;
             noteIndexInLine = 0;
+            
+            //Refresh line and notes reference immediately
+            currentLine = songData.lines.get(currentLineIndex);
+            notes = currentLine.notes;
         }
 
         // Compute position of hitbox
@@ -178,6 +188,10 @@ public class GameController implements Initializable {
         long nextNoteTime = notes.get(noteIndexInLine + 1).targetTimeMs;
         double noteXPrevDist = notes.get(noteIndexInLine).pixelX;
         double noteXNextDist = notes.get(noteIndexInLine + 1).pixelX;
+
+        double hitBoxPosition = noteXPrevDist + ((double)(elapsedMs - prevNoteTime) / (nextNoteTime - prevNoteTime)) * (noteXNextDist - noteXPrevDist) - 50;
+
+        return hitBoxPosition;
     }
 
     //new update line index method
@@ -211,9 +225,14 @@ public class GameController implements Initializable {
         if (!currentNote.processed && elapsedMS > (currentNote.targetTimeMs + MISS_TOLERANCE_MS)) {
             currentNote.processed = true;
             currentNote.isHit = false; 
-            ScoreManager.registerMiss();
+            scoreManager.registerMiss();
             System.out.println("Note EXPIRED and missed: " + currentNote.noteName);
         }
+    }
+
+    public void updateUI(int score, int combo, String rating) {
+        //printing to console for now since this is for UI
+        System.out.println("UI Update -> Score: " + score + " | Combo: " + combo + " | Rating: " + rating);
     }
 
     // handles keyboard press events
