@@ -53,6 +53,14 @@ public class GameController implements Initializable {
             if (!masterClock.isRunning()) return;
             long elapsedMs = masterClock.getElapsedMs();
             
+            //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
+            if(currentLineIndex >= songData.lines.size() - 1 && 
+            songData.lines.get(currentLineIndex).notes.get(noteIndexInLine).processed){
+            audioService.stopSong();
+            masterClock.stop();
+            this.stop();
+            animationTimer.stop();
+
             //check if note is expired
             checkNoteExpiry(elapsedMs);
 
@@ -63,8 +71,10 @@ public class GameController implements Initializable {
             setHitBoxX(computedX);
             updateLineDisplay();
 
-            //use code below if ui needs it
-            //applyParallax(elapsedMs);
+            applyParallax(elapsedMs);
+
+            
+        }
         }
     };
 
@@ -111,11 +121,8 @@ public class GameController implements Initializable {
         animationTimer.start();
 
         // 8. Closing Methods
-        if(currentLineIndex >= songData.lines.size()){
-            audioService.stopSong();
-            masterClock.stop();
-            animationTimer.stop();
-        }
+        //UPDATE: moved this block to the end of the handle method in animation timer, to ensure it is checked every frame and not just at the start of the song
+        
         
 
     }
@@ -174,14 +181,15 @@ public class GameController implements Initializable {
         // }
 
         // Reset noteindex after done with line, iterate line
-        if (noteIndexInLine >= notes.size() - 1 && currentLineIndex < songData.lines.size() - 1) {
+        //UPDATE: removing this due to advanceNoteIndex method, will handle line advancement and note index reset there
+        /*if (noteIndexInLine >= notes.size() - 1 && currentLineIndex < songData.lines.size() - 1) {
             currentLineIndex++;
             noteIndexInLine = 0;
             
             //Refresh line and notes reference immediately
             currentLine = songData.lines.get(currentLineIndex);
             notes = currentLine.notes;
-        }
+        } */
 
         // Compute position of hitbox
         long prevNoteTime = notes.get(noteIndexInLine).targetTimeMs;
@@ -233,6 +241,12 @@ public class GameController implements Initializable {
     public void updateUI(int score, int combo, String rating) {
         //printing to console for now since this is for UI
         System.out.println("UI Update -> Score: " + score + " | Combo: " + combo + " | Rating: " + rating);
+    }
+
+    private void applyParallax(long elapsedMs) {
+        // Optional: Implement parallax effect on sheet music based on elapsed time
+        // This is a placeholder for where you would add code to adjust the position of the sheet music
+        // to create a parallax scrolling effect as the song progresses.
     }
 
     // handles keyboard press events
