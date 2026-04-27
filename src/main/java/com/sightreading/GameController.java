@@ -49,9 +49,19 @@ public class GameController implements Initializable {
         public void handle(long now){
             if (!masterClock.isRunning()) return;
             long elapsedMs = masterClock.getElapsedMs();
+            
+            //check if note is expired
+            checkNoteExpiry(elapsedMs);
+
+            //move index forward once note is processed
+            advanceNoteIndex();
+
             double computedX = computeHitBox(elapsedMs);
             setHitBoxX(computedX);
             updateLineDisplay();
+
+            //use code below if ui needs it
+            //applyParallax(elapsedMs);
         }
     };
 
