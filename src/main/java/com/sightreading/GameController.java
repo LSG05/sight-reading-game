@@ -37,8 +37,14 @@ public class GameController implements Initializable {
     private int noteIndexInLine = 0;
     private int currentLineIndex = 0;
 
+    // ms window for a note to be considered a hit, will be used in input handling
+    private final static int MISS_TOLERANCE_MS = 200; 
+
     // Input and UI handling, add ui controller soon
     private InputHandler inputHandler;
+
+    // Initialize ScoreManager with reference to this GameController for UI updates
+    private ScoreManager scoreManager;
 
     // Declare animationTimer for frame by frame activities
     private AnimationTimer animationTimer = new AnimationTimer() {
@@ -46,9 +52,29 @@ public class GameController implements Initializable {
         public void handle(long now){
             if (!masterClock.isRunning()) return;
             long elapsedMs = masterClock.getElapsedMs();
+            
+            //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
+            if(currentLineIndex >= songData.lines.size() - 1 && 
+            songData.lines.get(currentLineIndex).notes.get(noteIndexInLine).processed){
+            audioService.stopSong();
+            masterClock.stop();
+            this.stop();
+            animationTimer.stop();
+
+            //check if note is expired
+            checkNoteExpiry(elapsedMs);
+
+            //move index forward once note is processed
+            advanceNoteIndex();
+
             double computedX = computeHitBox(elapsedMs);
             setHitBoxX(computedX);
             updateLineDisplay();
+
+            applyParallax(elapsedMs);
+
+            
+        }
         }
     };
 
@@ -82,6 +108,10 @@ public class GameController implements Initializable {
         //     }
         // }
 
+        // initalize score manager and input handler with reference to this gamecontroller for ui updates
+        scoreManager = new ScoreManager(this);
+        inputHandler = new InputHandler(this);
+
         // 6. Load Audio
         audioService.loadSong();
 
@@ -91,11 +121,8 @@ public class GameController implements Initializable {
         animationTimer.start();
 
         // 8. Closing Methods
-        if(currentLineIndex >= songData.lines.size()){
-            audioService.stopSong();
-            masterClock.stop();
-            animationTimer.stop();
-        }
+        //UPDATE: moved this block to the end of the handle method in animation timer, to ensure it is checked every frame and not just at the start of the song
+        
         
 
     }
@@ -143,8 +170,7 @@ public class GameController implements Initializable {
         // if (noteIndexInLine >= notes.size() - 1) {
         //     return notes.get(notes.size() - 1).pixelX;
         // }
-        if (currentLineIndex >= songData.lines.size() - 1 && 
-            noteIndexInLine >= notes.size() - 1) {
+        if (currentLineIndex >= songData.lines.size() - 1 && noteIndexInLine >= notes.size() - 1) {
             return notes.get(notes.size() - 1).pixelX;
         }
 
@@ -155,10 +181,15 @@ public class GameController implements Initializable {
         // }
 
         // Reset noteindex after done with line, iterate line
-        if (noteIndexInLine >= notes.size() - 1 && currentLineIndex < songData.lines.size() - 1) {
+        //UPDATE: removing this due to advanceNoteIndex method, will handle line advancement and note index reset there
+        /*if (noteIndexInLine >= notes.size() - 1 && currentLineIndex < songData.lines.size() - 1) {
             currentLineIndex++;
             noteIndexInLine = 0;
-        }
+            
+            //Refresh line and notes reference immediately
+            currentLine = songData.lines.get(currentLineIndex);
+            notes = currentLine.notes;
+        } */
 
         // Compute position of hitbox
         long prevNoteTime = notes.get(noteIndexInLine).targetTimeMs;
@@ -166,24 +197,56 @@ public class GameController implements Initializable {
         double noteXPrevDist = notes.get(noteIndexInLine).pixelX;
         double noteXNextDist = notes.get(noteIndexInLine + 1).pixelX;
 
-        double hitBoxPosition = noteXPrevDist + ((double)(elapsedMs-prevNoteTime)/(nextNoteTime-prevNoteTime))*(noteXNextDist - noteXPrevDist) - 50;
+        double hitBoxPosition = noteXPrevDist + ((double)(elapsedMs - prevNoteTime) / (nextNoteTime - prevNoteTime)) * (noteXNextDist - noteXPrevDist) - 50;
 
-        // Update line index
-        if (elapsedMs >= nextNoteTime && noteIndexInLine < notes.size() - 1) {
-            noteIndexInLine++;
-        }
-        
-        
-        System.out.println("noteIndexinLine " + noteIndexInLine);
-        System.out.println("currentLineIndex " + currentLineIndex);
-        System.out.println("Hitbox position " + hitBoxPosition);
         return hitBoxPosition;
+    }
+
+    //new update line index method
+    private void advanceNoteIndex() {
+        LineData currentLine = songData.lines.get(currentLineIndex);
+        NoteData currentNote = currentLine.notes.get(noteIndexInLine);
+
+        // Advance only if current note is processed
+        if (currentNote.processed) {
+            if (noteIndexInLine < currentLine.notes.size() -1) {
+                noteIndexInLine++;
+            } else if (currentLineIndex < songData.lines.size() -1) {
+                currentLineIndex++;
+                noteIndexInLine = 0;
+            }
+        } 
+        
     }
 
     private void updateLineDisplay() {
         if (currentLineIndex >= 0 && currentLineIndex < songData.lines.size()) {
             swapToLine(this.currentLineIndex);
         }
+    }
+
+    private void checkNoteExpiry(long elapsedMS) {
+        LineData currentLine = songData.lines.get(currentLineIndex);
+        NoteData currentNote = currentLine.notes.get(noteIndexInLine);
+
+        //If clock has passed the note's target time by more than the miss tolerance, mark it as missed and move on
+        if (!currentNote.processed && elapsedMS > (currentNote.targetTimeMs + MISS_TOLERANCE_MS)) {
+            currentNote.processed = true;
+            currentNote.isHit = false; 
+            scoreManager.registerMiss();
+            System.out.println("Note EXPIRED and missed: " + currentNote.noteName);
+        }
+    }
+
+    public void updateUI(int score, int combo, String rating) {
+        //printing to console for now since this is for UI
+        System.out.println("UI Update -> Score: " + score + " | Combo: " + combo + " | Rating: " + rating);
+    }
+
+    private void applyParallax(long elapsedMs) {
+        // Optional: Implement parallax effect on sheet music based on elapsed time
+        // This is a placeholder for where you would add code to adjust the position of the sheet music
+        // to create a parallax scrolling effect as the song progresses.
     }
 
     // handles keyboard press events
