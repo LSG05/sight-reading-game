@@ -53,14 +53,6 @@ public class GameController implements Initializable {
             if (!masterClock.isRunning()) return;
             long elapsedMs = masterClock.getElapsedMs();
             
-            //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
-            if(currentLineIndex >= songData.lines.size() - 1 && 
-            songData.lines.get(currentLineIndex).notes.get(noteIndexInLine).processed){
-            audioService.stopSong();
-            masterClock.stop();
-            this.stop();
-            animationTimer.stop();
-
             //check if note is expired
             checkNoteExpiry(elapsedMs);
 
@@ -72,9 +64,15 @@ public class GameController implements Initializable {
             updateLineDisplay();
 
             applyParallax(elapsedMs);
-
             
-        }
+            //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
+            if(currentLineIndex >= songData.lines.size() - 1 && 
+            songData.lines.get(currentLineIndex).notes.get(noteIndexInLine).processed){
+                audioService.stopSong();
+                masterClock.stop();
+                this.stop();
+                animationTimer.stop();
+            }
         }
     };
 
