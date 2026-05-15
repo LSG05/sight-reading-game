@@ -208,9 +208,14 @@ public class GameController implements Initializable {
     private void advanceNoteIndex() {
         LineData currentLine = songData.lines.get(currentLineIndex);
         NoteData currentNote = currentLine.notes.get(noteIndexInLine);
+        long elapsedTime = masterClock.getElapsedMs();
 
-        // Advance only if current note is processed
-        if (currentNote.processed) {
+        if(currentNote == currentLine.notes.get(currentLine.notes.size() - 1) && currentLineIndex == songData.lines.size() - 1){
+            return; // if we are at the last note of the last line, do not advance further
+        }
+        
+        // Advance only if current note is processed and is before next note
+        if (currentNote.processed && elapsedTime >= (currentNote.targetTimeMs - 50)) {
             if (noteIndexInLine < currentLine.notes.size() -1) {
                 noteIndexInLine++;
             } else if (currentLineIndex < songData.lines.size() -1) {
