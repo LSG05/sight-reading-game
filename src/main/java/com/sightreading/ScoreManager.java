@@ -17,11 +17,13 @@ public class ScoreManager {
         long absError = Math.abs(timingError);
 
         // update rating based on timing error categories
-        if (absError <= 50) {
+        if(timingError < 0 && timingError >= -50) {
+            rating = "EARLY";
+        } else if (timingError <= 50) {
             rating = "PERFECT";
-        } else if (absError <= 100) {
+        } else if (timingError <= 100) {
             rating = "GREAT";
-        } else if (absError >= 190){
+        } else if (timingError >= 190){
             rating = "LATE";
         }
 
@@ -54,6 +56,8 @@ public class ScoreManager {
     public void registerMiss() {
         this.combo = 0;
         this.multiplier = 1;
+        this.score -=  50; // flat penalty for miss
+
         Platform.runLater(() -> {
             gameController.updateUI(this.score, this.combo, "MISS");
         });
