@@ -236,7 +236,7 @@ public class GameController implements Initializable {
             currentNote.processed = true;
             currentNote.isHit = false; 
             scoreManager.registerMiss();
-            System.out.println("Note EXPIRED and missed: " + currentNote.noteName);
+            System.out.println("Note EXPIRED and missed: " + currentNote.noteName + " (elapsed: " + elapsedMS + "ms, target: " + currentNote.targetTimeMs + "ms)");
         }
     }
 

@@ -50,6 +50,6 @@ public class InputHandler {
             System.out.println("MISS registered for note: " + currentNote.noteName + " (pressed: " + keyPressed + ")");
         }
 
-        System.out.println("DEBUG: Key Pressed: " + keyPressed + " | Target Note: " + currentNote.noteName);
+        System.out.println("DEBUG: Key Pressed: " + keyPressed + " | Target Note: " + currentNote.noteName + " (elapsed: " + currentTime + "ms, target: " + currentNote.targetTimeMs + "ms)");
     }
 }
