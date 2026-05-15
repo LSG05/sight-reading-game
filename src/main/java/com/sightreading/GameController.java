@@ -172,7 +172,7 @@ public class GameController implements Initializable {
         // if (noteIndexInLine >= notes.size() - 1) {
         //     return notes.get(notes.size() - 1).pixelX;
         // }
-        if (currentLineIndex >= songData.lines.size() - 1 && noteIndexInLine >= notes.size() - 1) {
+        if (currentLineIndex >= songData.lines.size() - 1 || noteIndexInLine >= notes.size() - 1) {
             return notes.get(notes.size() - 1).pixelX;
         }
 
