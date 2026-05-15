@@ -17,14 +17,16 @@ public class ScoreManager {
         long absError = Math.abs(timingError);
 
         // update rating based on timing error categories
-        if (absError <= 45) {
+        if (absError <= 50) {
             rating = "PERFECT";
-        } else if (absError <= 90) {
+        } else if (absError <= 100) {
             rating = "GREAT";
+        } else if (absError >= 190){
+            rating = "LATE";
         }
 
         // penalty based on timing error (linear scale)
-        double penalty = (absError / 150.0) * 80.0;
+        double penalty = (absError / 190.0) * 80.0;
         int basePoints = (int) (100 - penalty);
 
         // multiplier logic based on current combo
