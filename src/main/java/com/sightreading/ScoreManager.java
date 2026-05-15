@@ -62,4 +62,14 @@ public class ScoreManager {
             gameController.updateUI(this.score, this.combo, "MISS");
         });
     }
+
+    public void registerStray() {
+        this.combo = 0;
+        this.multiplier = 1;
+        this.score -= 15; // smaller penalty for stray notes
+
+        Platform.runLater(() -> {
+            gameController.updateUI(this.score, this.combo, "STRAY");
+        });
+    }
 }

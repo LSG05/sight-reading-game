@@ -23,7 +23,8 @@ public class InputHandler {
 
 
         // 1. Anti-Cheat: Only allow hit if note exists and isn't processed
-        if (currentNote == null || currentNote.processed) {
+        if (currentNote.processed) {
+            gameController.getScoreManager().registerStray(); 
             return;
         }
 
