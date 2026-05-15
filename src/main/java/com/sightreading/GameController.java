@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -120,8 +121,11 @@ public class GameController implements Initializable {
 
         // 8. Closing Methods
         //UPDATE: moved this block to the end of the handle method in animation timer, to ensure it is checked every frame and not just at the start of the song
-        
-        
+        // set focus to the sheet music pane so it can receive key events immediately
+        Platform.runLater(() -> {
+        sheetMusicView.setFocusTraversable(true); // Allow it to be focused
+        sheetMusicView.requestFocus();           // Grab the focus immediately
+    });
 
     }
 
@@ -291,4 +295,20 @@ public class GameController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    // Add these to GameController.java so InputHandler can see them
+    public NoteData getCurrentNote() {
+        return songData.lines.get(currentLineIndex).notes.get(noteIndexInLine);
+    }
+
+
+    public MasterClock getMasterClock() {
+        return this.masterClock;
+    }
+
+
+    public ScoreManager getScoreManager() {
+        return this.scoreManager;
+    }
+
 }
