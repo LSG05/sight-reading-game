@@ -212,24 +212,34 @@ public class GameController implements Initializable {
             return; // if we are at the last note of the last line, do not advance further
         }
         
-        // Advance only if current note is processed and is before next note
-        if (currentNote.processed) {
-            long nextNoteTime;
-            if (noteIndexInLine < currentLine.notes.size() -1) {
-                nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
-            } else {
-                nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
-            }
+        long nextNoteTime;
+        if (noteIndexInLine < currentLine.notes.size() -1) {
+            nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
+        } else {
+            nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
+        }
 
-            if (elapsedTime >= nextNoteTime - 50) {
+        if (elapsedTime == nextNoteTime - 50) {
+            if (noteIndexInLine < currentLine.notes.size() - 1) {
+                noteIndexInLine++;
+            } else {
+                noteIndexInLine = 0;
+                currentLineIndex++;
+            }
+        }
+
+        /* 
+            if (elapsedTime >= currentLine.notes.get(1).targetTimeMs - 50 && elapsedTime >= currentNote.targetTimeMs - 50) {
                 if (noteIndexInLine < currentLine.notes.size() - 1) {
                     noteIndexInLine++;
+                    System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
                 } else {
                     noteIndexInLine = 0;
                     currentLineIndex++;
+                    System.out.println("Advanced to line index " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
                 }
             }
-        }
+        */
         
     }
 
