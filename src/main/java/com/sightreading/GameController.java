@@ -127,6 +127,15 @@ public class GameController implements Initializable {
         sheetMusicView.requestFocus();           // Grab the focus immediately
     });
 
+        printActiveThreads();    
+    }
+
+    private void printActiveThreads() {
+        System.out.println("--- ACTIVE THREADS REPORT ---");
+        Thread.getAllStackTraces().keySet().forEach(t -> {
+            System.out.println("Thread Name: " + t.getName() + " | Priority: " + t.getPriority() + " | Is Daemon: " + t.isDaemon());
+        });
+        System.out.println("-----------------------------");
     }
 
     private void preloadAllImages() {
