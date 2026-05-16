@@ -23,7 +23,8 @@ public class InputHandler {
 
 
         // 1. Anti-Cheat: Only allow hit if note exists and isn't processed
-        if (currentNote.processed) {
+        //UPDATE: added check to register stray hits that don't correspond to any note (currentNote == null) 
+        if (currentNote == null || currentNote.processed) {
             gameController.getScoreManager().registerStray(); 
             return;
         }
@@ -36,7 +37,7 @@ public class InputHandler {
             long timingError = currentTime - currentNote.targetTimeMs;
 
 
-            // 4. Register the hit using YOUR specific logic
+            // 4. Register the hit
             currentNote.processed = true;
             currentNote.isHit = true;
             gameController.getScoreManager().registerHit(timingError);

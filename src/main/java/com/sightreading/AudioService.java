@@ -30,10 +30,15 @@ public class AudioService {
             songPlayer.play();
         }
     }
-    public void stopSong(){
+    public void stopSong(){ 
         if (songPlayer != null) {
-            songPlayer.stop();
-        }
+            if (songPlayer.getStatus() != Status.STOPPED && songPlayer.getStatus() != Status.DISPOSED) {
+                try {
+                    songPlayer.stop();
+                } catch (Exception e) {
+                }
+        } 
+    }
         dispose();
     }
     public boolean isPlaying(){
@@ -46,6 +51,7 @@ public class AudioService {
     public void dispose(){
         if (songPlayer != null) {
         songPlayer.dispose();
+        songPlayer = null;
         }
     }
 
