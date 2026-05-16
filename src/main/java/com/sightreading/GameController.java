@@ -52,7 +52,7 @@ public class GameController implements Initializable {
         @Override
         public void handle(long now){
             if (!masterClock.isRunning()) return;
-            long elapsedMs = masterClock.getElapsedMs();
+            long elapsedMs = (long) audioService.getCurrentTimeMs(); // Use audio service time for synchronization
             
             //check if note is expired
             checkNoteExpiry(elapsedMs);
@@ -316,4 +316,8 @@ public class GameController implements Initializable {
         return this.scoreManager;
     }
 
+    // Added getter for AudioService to allow InputHandler to access current time for timing error calculations
+    public AudioService getAudioService() {
+        return this.audioService;
+    }
 }

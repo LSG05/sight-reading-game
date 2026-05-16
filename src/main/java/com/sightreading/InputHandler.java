@@ -16,7 +16,7 @@ public class InputHandler {
         String keyPressed = event.getText().toUpperCase();
         System.out.println("Key pressed: '" + keyPressed + "' (code: " + event.getCode() + ")");
        
-        long currentTime = gameController.getMasterClock().getElapsedMs();
+        long currentTime = (long) gameController.getAudioService().getCurrentTimeMs(); // Get current time from audio service for timing error calculations
         NoteData currentNote = gameController.getCurrentNote();
        
         System.out.println("Current note: " + (currentNote != null ? currentNote.noteName : "null") + ", processed: " + (currentNote != null ? currentNote.processed : "N/A"));

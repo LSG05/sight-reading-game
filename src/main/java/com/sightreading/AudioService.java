@@ -50,4 +50,12 @@ public class AudioService {
     }
 
     // future note: pause and resume
+
+    // Added method to get current time of the song for timing error calculations in InputHandler
+    public double getCurrentTimeMs(){
+        if (songPlayer != null && songPlayer.getStatus() == Status.PLAYING) {
+            return songPlayer.getCurrentTime().toMillis();
+        } 
+        return 0.0;
+    }
 }
