@@ -17,14 +17,15 @@ public class ScoreManager {
         long absError = Math.abs(timingError);
 
         // update rating based on timing error categories
-        if(timingError < 0 && timingError >= -50) {
-            rating = "EARLY";
-        } else if (timingError <= 50) {
+        //UPDATE: fixed logic so some early hits are not registered as perfect
+        if (absError <= 50) {
             rating = "PERFECT";
-        } else if (timingError <= 100) {
+        } else if (absError <= 100) {
             rating = "GREAT";
-        } else if (timingError >= 190){
-            rating = "LATE";
+        } else if (absError <= 190){
+            rating = (timingError <0) ? "EARLY" : "LATE";
+        } else {
+            rating = "OKAY";
         }
 
         // penalty based on timing error (linear scale)
@@ -56,7 +57,7 @@ public class ScoreManager {
     public void registerMiss() {
         this.combo = 0;
         this.multiplier = 1;
-        this.score -=  50; // flat penalty for miss
+        this.score =  Math.max(0, this.score - 50); // flat penalty for miss
 
         Platform.runLater(() -> {
             gameController.updateUI(this.score, this.combo, "MISS");
@@ -66,7 +67,7 @@ public class ScoreManager {
     public void registerStray() {
         this.combo = 0;
         this.multiplier = 1;
-        this.score -= 15; // smaller penalty for stray notes
+        this.score =  Math.max(0, this.score - 15); // smaller penalty for stray notes
 
         Platform.runLater(() -> {
             gameController.updateUI(this.score, this.combo, "STRAY");
