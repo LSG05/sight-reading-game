@@ -20,7 +20,8 @@ public class InputHandler {
         NoteData currentNote = gameController.getCurrentNote();
        
         System.out.println("Current note: " + (currentNote != null ? currentNote.noteName : "null") + ", processed: " + (currentNote != null ? currentNote.processed : "N/A"));
-
+        System.out.println("DEBUG: Key Pressed: " + keyPressed + " | Target Note: " + currentNote.noteName + " (elapsed: " + currentTime + "ms, target: " + currentNote.targetTimeMs + "ms)");
+    
 
         // 1. Anti-Cheat: Only allow hit if note exists and isn't processed
         //UPDATE: added check to register stray hits that don't correspond to any note (currentNote == null) 
@@ -52,6 +53,5 @@ public class InputHandler {
             System.out.println("MISS registered for note: " + currentNote.noteName + " (pressed: " + keyPressed + ")");
         }
 
-        System.out.println("DEBUG: Key Pressed: " + keyPressed + " | Target Note: " + currentNote.noteName + " (elapsed: " + currentTime + "ms, target: " + currentNote.targetTimeMs + "ms)");
     }
 }
