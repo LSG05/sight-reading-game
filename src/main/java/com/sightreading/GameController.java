@@ -73,6 +73,7 @@ public class GameController implements Initializable {
                 masterClock.stop();
                 this.stop();
                 animationTimer.stop();
+                resetSongStates(); // reset all note states for potential replay
             }
         }
     };
@@ -222,20 +223,52 @@ public class GameController implements Initializable {
         }
         
         long nextNoteTime;
+
+
+        if(noteIndexInLine == 0){
+            nextNoteTime = currentLine.notes.get(1).targetTimeMs; // time of second note in current line
+        } else if (noteIndexInLine < currentLine.notes.size() -1) {
+            nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
+        } else {
+            nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
+        }
+            
+
+        // this logic causes the index to not advance at all. it stays at C.
+        /* 
         if (noteIndexInLine < currentLine.notes.size() -1) {
             nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
         } else {
             nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
         }
+        */
 
-        if (elapsedTime == nextNoteTime - 50) {
+        System.out.println("nextNoteTime: " + nextNoteTime + "ms, elapsedTime: " + elapsedTime + "ms");
+
+        // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
+        // for this note (to prevent multiple advances for the same note due to animationtimer's frequent calls)
+        if (elapsedTime >= nextNoteTime - 190 && !currentNote.isSwitched) {
+            currentNote.isSwitched = true; // add a flag to prevent multiple switches for the same note
             if (noteIndexInLine < currentLine.notes.size() - 1) {
                 noteIndexInLine++;
+                System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
             } else {
                 noteIndexInLine = 0;
                 currentLineIndex++;
             }
         }
+
+        /* outdated logic
+        if (elapsedTime == nextNoteTime - 50) {
+            if (noteIndexInLine < currentLine.notes.size() - 1) {
+                noteIndexInLine++;
+                System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
+            } else {
+                noteIndexInLine = 0;
+                currentLineIndex++;
+            }
+        }
+            */
 
         /* 
             if (elapsedTime >= currentLine.notes.get(1).targetTimeMs - 50 && elapsedTime >= currentNote.targetTimeMs - 50) {
@@ -360,5 +393,21 @@ public class GameController implements Initializable {
     // Added getter for AudioService to allow InputHandler to access current time for timing error calculations
     public AudioService getAudioService() {
         return this.audioService;
+    }
+
+    // Add reset function for song states
+    public void resetSongStates(){
+        // Reset the indices
+        this.noteIndexInLine = 0;
+        this.currentLineIndex = 0;
+
+        // Loop through the data structure to clear flags
+        for (LineData line : songData.lines) {
+            for (NoteData note : line.notes) {
+                note.processed = false;
+                note.isHit = false;
+                note.isSwitched = false;
+            }
+        }
     }
 }
