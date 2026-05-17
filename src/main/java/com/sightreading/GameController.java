@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -51,7 +52,7 @@ public class GameController implements Initializable {
         @Override
         public void handle(long now){
             if (!masterClock.isRunning()) return;
-            long elapsedMs = masterClock.getElapsedMs();
+            long elapsedMs = (long) audioService.getCurrentTimeMs(); // Use audio service time for synchronization
             
             //check if note is expired
             checkNoteExpiry(elapsedMs);
@@ -66,7 +67,7 @@ public class GameController implements Initializable {
             applyParallax(elapsedMs);
             
             //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
-            if(currentLineIndex >= songData.lines.size() - 1 && 
+            if(currentLineIndex >= songData.lines.size() - 1 && noteIndexInLine >= songData.lines.get(songData.lines.size() - 1).notes.size() - 1 &&
             songData.lines.get(currentLineIndex).notes.get(noteIndexInLine).processed){
                 audioService.stopSong();
                 masterClock.stop();
@@ -120,9 +121,21 @@ public class GameController implements Initializable {
 
         // 8. Closing Methods
         //UPDATE: moved this block to the end of the handle method in animation timer, to ensure it is checked every frame and not just at the start of the song
-        
-        
+        // set focus to the sheet music pane so it can receive key events immediately
+        Platform.runLater(() -> {
+        sheetMusicView.setFocusTraversable(true); // Allow it to be focused
+        sheetMusicView.requestFocus();           // Grab the focus immediately
+    });
 
+        printActiveThreads();    
+    }
+
+    private void printActiveThreads() {
+        System.out.println("--- ACTIVE THREADS REPORT ---");
+        Thread.getAllStackTraces().keySet().forEach(t -> {
+            System.out.println("Thread Name: " + t.getName() + " | Priority: " + t.getPriority() + " | Is Daemon: " + t.isDaemon());
+        });
+        System.out.println("-----------------------------");
     }
 
     private void preloadAllImages() {
@@ -159,68 +172,105 @@ public class GameController implements Initializable {
         hitBox.setTranslateX(x);
     }
 
-    public double computeHitBox(long elapsedMs){
-        // Obtain current line and note list for the line
-        LineData currentLine = songData.lines.get(currentLineIndex);
-        List<NoteData> notes = currentLine.notes;
-
-        // Scope handling of out of bounds
-        // if (noteIndexInLine >= notes.size() - 1) {
-        //     return notes.get(notes.size() - 1).pixelX;
-        // }
-        if (currentLineIndex >= songData.lines.size() - 1 && noteIndexInLine >= notes.size() - 1) {
-            return notes.get(notes.size() - 1).pixelX;
-        }
-
-        // // Reset noteindex after done with line, iterate line
-        // if (noteIndexInLine >= notes.size() && currentLineIndex < songData.lines.size() - 1) {
-        //     currentLineIndex++;
-        //     noteIndexInLine = 0;
-        // }
-
-        // Reset noteindex after done with line, iterate line
-        //UPDATE: removing this due to advanceNoteIndex method, will handle line advancement and note index reset there
-        /*if (noteIndexInLine >= notes.size() - 1 && currentLineIndex < songData.lines.size() - 1) {
-            currentLineIndex++;
-            noteIndexInLine = 0;
-            
-            //Refresh line and notes reference immediately
-            currentLine = songData.lines.get(currentLineIndex);
-            notes = currentLine.notes;
-        } */
-
-        // Compute position of hitbox
-        long prevNoteTime = notes.get(noteIndexInLine).targetTimeMs;
-        long nextNoteTime = notes.get(noteIndexInLine + 1).targetTimeMs;
-        double noteXPrevDist = notes.get(noteIndexInLine).pixelX;
-        double noteXNextDist = notes.get(noteIndexInLine + 1).pixelX;
-
-        double hitBoxPosition = noteXPrevDist + ((double)(elapsedMs - prevNoteTime) / (nextNoteTime - prevNoteTime)) * (noteXNextDist - noteXPrevDist) - 50;
-
-        return hitBoxPosition;
+    public double computeHitBox(long elapsedMs) {
+    // 1. Flatten all notes to easily find where we are in time
+    List<NoteData> allNotes = new ArrayList<>();
+    for (LineData line : songData.lines) {
+        allNotes.addAll(line.notes);
     }
+
+    // 2. Find which two notes the current time falls between
+    int activeIndex = 0;
+    for (int i = 0; i < allNotes.size() - 1; i++) {
+        if (elapsedMs >= allNotes.get(i).targetTimeMs && elapsedMs < allNotes.get(i + 1).targetTimeMs) {
+            activeIndex = i;
+            break;
+        }
+    }
+
+    // Handle end of song
+    if (elapsedMs >= allNotes.get(allNotes.size() - 1).targetTimeMs) {
+        return allNotes.get(allNotes.size() - 1).pixelX;
+    }
+
+    NoteData prev = allNotes.get(activeIndex);
+    NoteData next = allNotes.get(activeIndex + 1);
+
+    // 3. Determine if we are moving to a new line
+    // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line!
+    if (next.pixelX < prev.pixelX) {
+        // We are in the "gap" between lines. 
+        // We calculate a fake target far to the right so it glides off screen.
+        double fakeNextX = 850; // slightly off the right edge
+        double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
+        return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 50;
+    }
+
+    // 4. Standard Interpolation
+    double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
+    return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 50;
+}
 
     //new update line index method
     private void advanceNoteIndex() {
         LineData currentLine = songData.lines.get(currentLineIndex);
         NoteData currentNote = currentLine.notes.get(noteIndexInLine);
+        long elapsedTime = (long) audioService.getCurrentTimeMs();
 
-        // Advance only if current note is processed
-        if (currentNote.processed) {
-            if (noteIndexInLine < currentLine.notes.size() -1) {
+        if(currentNote == currentLine.notes.get(currentLine.notes.size() - 1) && currentLineIndex == songData.lines.size() - 1){
+            return; // if we are at the last note of the last line, do not advance further
+        }
+        
+        long nextNoteTime;
+        if (noteIndexInLine < currentLine.notes.size() -1) {
+            nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
+        } else {
+            nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
+        }
+
+        if (elapsedTime == nextNoteTime - 50) {
+            if (noteIndexInLine < currentLine.notes.size() - 1) {
                 noteIndexInLine++;
-            } else if (currentLineIndex < songData.lines.size() -1) {
-                currentLineIndex++;
+            } else {
                 noteIndexInLine = 0;
+                currentLineIndex++;
             }
-        } 
+        }
+
+        /* 
+            if (elapsedTime >= currentLine.notes.get(1).targetTimeMs - 50 && elapsedTime >= currentNote.targetTimeMs - 50) {
+                if (noteIndexInLine < currentLine.notes.size() - 1) {
+                    noteIndexInLine++;
+                    System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
+                } else {
+                    noteIndexInLine = 0;
+                    currentLineIndex++;
+                    System.out.println("Advanced to line index " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
+                }
+            }
+        */
         
     }
 
     private void updateLineDisplay() {
-        if (currentLineIndex >= 0 && currentLineIndex < songData.lines.size()) {
+        /*if (currentLineIndex >= 0 && currentLineIndex < songData.lines.size()) {
             swapToLine(this.currentLineIndex);
+        } */
+
+        long elapsedMs = (long) audioService.getCurrentTimeMs();
+        LineData lineData = songData.lines.get(currentLineIndex);
+        NoteData lastNoteOfLine = lineData.notes.get(lineData.notes.size() - 1);
+
+        if (currentLineIndex > 0) {
+            LineData prevLine = songData.lines.get(currentLineIndex - 1);
+            NoteData lastNoteOfPrevLine = prevLine.notes.get(prevLine.notes.size() - 1);
+
+            if (elapsedMs < lastNoteOfPrevLine.targetTimeMs + 200) {
+                swapToLine(currentLineIndex - 1);
+                return;
+            }
         }
+        swapToLine(currentLineIndex);
     }
 
     private void checkNoteExpiry(long elapsedMS) {
@@ -232,7 +282,7 @@ public class GameController implements Initializable {
             currentNote.processed = true;
             currentNote.isHit = false; 
             scoreManager.registerMiss();
-            System.out.println("Note EXPIRED and missed: " + currentNote.noteName);
+            System.out.println("Note EXPIRED and missed: " + currentNote.noteName + " (elapsed: " + elapsedMS + "ms, target: " + currentNote.targetTimeMs + "ms)");
         }
     }
 
@@ -290,5 +340,25 @@ public class GameController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Add these to GameController.java so InputHandler can see them
+    public NoteData getCurrentNote() {
+        return songData.lines.get(currentLineIndex).notes.get(noteIndexInLine);
+    }
+
+
+    public MasterClock getMasterClock() {
+        return this.masterClock;
+    }
+
+
+    public ScoreManager getScoreManager() {
+        return this.scoreManager;
+    }
+
+    // Added getter for AudioService to allow InputHandler to access current time for timing error calculations
+    public AudioService getAudioService() {
+        return this.audioService;
     }
 }

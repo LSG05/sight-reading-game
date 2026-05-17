@@ -30,10 +30,15 @@ public class AudioService {
             songPlayer.play();
         }
     }
-    public void stopSong(){
+    public void stopSong(){ 
         if (songPlayer != null) {
-            songPlayer.stop();
-        }
+            if (songPlayer.getStatus() != Status.STOPPED && songPlayer.getStatus() != Status.DISPOSED) {
+                try {
+                    songPlayer.stop();
+                } catch (Exception e) {
+                }
+        } 
+    }
         dispose();
     }
     public boolean isPlaying(){
@@ -46,8 +51,17 @@ public class AudioService {
     public void dispose(){
         if (songPlayer != null) {
         songPlayer.dispose();
+        songPlayer = null;
         }
     }
 
     // future note: pause and resume
+
+    // Added method to get current time of the song for timing error calculations in InputHandler
+    public double getCurrentTimeMs(){
+        if (songPlayer != null && songPlayer.getStatus() == Status.PLAYING) {
+            return songPlayer.getCurrentTime().toMillis();
+        } 
+        return 0.0;
+    }
 }
