@@ -6,6 +6,13 @@
       "composer": "Traditional",
       "bpm": 80,
       "folder": "songs/twinkle"
+    },
+    {
+      "id": "pirates",
+      "title": "He's a Pirate",
+      "composer": "Klaus Badelt and Hans Zimmer",
+      "bpm": 189,
+      "folder": "songs/pirates"
     }
   ]
 }
