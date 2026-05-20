@@ -37,3 +37,9 @@
 #leaderboardButton {
     -fx-background-image: url('images/leaderboard-button.png');
 }
+
+.home-background {
+    -fx-background-image: url('images/bg.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}

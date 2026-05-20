@@ -1,11 +1,14 @@
-{
-  "songs": [
-    {
-      "id": "twinkle",
-      "title": "Twinkle Twinkle Little Star",
-      "composer": "Traditional",
-      "bpm": 80,
-      "folder": "songs/twinkle"
-    }
-  ]
-}
+[
+  {
+    "id": "twinkle",
+    "title": "Twinkle Twinkle",
+    "bpm": "80 BPM",
+    "imagePath": "/com/sightreading/songs/twinkle/cover.jpg"
+  },
+  {
+    "id": "pirates",
+    "title": "Pirates of the Caribbean",
+    "bpm": "100 BPM",
+    "imagePath": null
+  }
+]

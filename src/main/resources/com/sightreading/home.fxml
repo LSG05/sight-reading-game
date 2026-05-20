@@ -2,41 +2,34 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 
-<StackPane prefHeight="900.0" prefWidth="1200.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sightreading.HomeController">
+<StackPane prefHeight="900.0" prefWidth="1200.0" styleClass="home-background" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sightreading.HomeController">
    <children>
-      <!-- bg transparency to make video bg noticeable -->
-      <MediaView fx:id="bgMediaView" fitHeight="900.0" fitWidth="1200.0" preserveRatio="false"/>
-
-      <VBox alignment="CENTER" spacing="40.0" style="-fx-background-color: transparent;">
+      
+      <VBox alignment="CENTER" spacing="35.0">
          <children>
-            <VBox alignment="CENTER" spacing="-10.0">
-               <children>
-                  <Label text="SIGHT READING" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="72.0" />
-                     </font>
-                  </Label>
-                  <Label text="RHYTHM GAME" textFill="#4488ff">
-                     <font>
-                        <Font name="System Bold" size="48.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
+            
+            <ImageView fitHeight="250.0" fitWidth="700.0" preserveRatio="true">
+               <image>
+                  <Image url="@images/logo.png" />
+               </image>
+            </ImageView>
 
             <VBox alignment="CENTER" spacing="10.0">
                <children>
-                  <Label text="Enter your name:" textFill="#aaaaaa">
+                  <Label text="Enter your name:" textFill="#D4B26F">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="nameField" maxWidth="350.0" prefHeight="50.0" promptText="Player 1" style="-fx-font-size: 20px; -fx-alignment: center; -fx-background-radius: 10; -fx-background-color: rgba(255, 255, 255, 0.9);" />
+                  
+                  <TextField fx:id="nameField" maxWidth="350.0" prefHeight="50.0" promptText="Player 1" style="-fx-font-size: 20px; -fx-alignment: center; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #D4B26F; -fx-border-width: 2px; -fx-background-color: rgba(255, 255, 255, 0.95);" />
+                  
                   <Label fx:id="errorLabel" textFill="#ff4444">
                      <font>
                         <Font name="System Bold" size="16.0" />
@@ -44,8 +37,14 @@
                   </Label>
                </children>
             </VBox>
-            <Button fx:id="playButton" mnemonicParsing="false" onAction="#handlePlay" prefHeight="70.0" prefWidth="300.0" styleClass="custom-canva-button" />
-            <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="70.0" prefWidth="300.0" styleClass="custom-canva-button" />
+            
+            <VBox alignment="CENTER" spacing="12.0">
+               <children>
+                  <Button fx:id="playButton" mnemonicParsing="false" onAction="#handlePlay" prefHeight="200.0" prefWidth="500.0" styleClass="custom-canva-button" />
+                  <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="76.0" prefWidth="325.0" styleClass="custom-canva-button" />
+               </children>
+            </VBox>
+
          </children>
       </VBox>
       
