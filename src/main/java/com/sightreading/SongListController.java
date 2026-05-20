@@ -108,10 +108,8 @@ public class SongListController {
         cardRoot.setPrefSize(300, 420);
         cardRoot.setFocusTraversable(true);
 
-        // 1. Load your Canva Frame (The Bottom Layer)
         ImageView frameView = new ImageView();
         try {
-            // Make sure your Canva export is named exactly this and placed in the images folder!
             frameView.setImage(new Image(getClass().getResourceAsStream("/com/sightreading/images/card_frame.png")));
             frameView.setFitWidth(300);
             frameView.setFitHeight(420);
@@ -119,23 +117,18 @@ public class SongListController {
             System.err.println("Could not load Canva card frame. Check the file path.");
         }
 
-        // 2. The Content Container (Holds the cover art and the text)
+        // REMINDER: will change this!!  -----------------------------------------------------
         VBox contentBox = new VBox();
         contentBox.setPrefSize(300, 420);
         contentBox.setAlignment(Pos.TOP_CENTER);
-        
-        // Push everything down so it fits perfectly inside the visual borders of your Canva frame
-        // (Top padding: 75px pushes art into the blue area)
         contentBox.setPadding(new javafx.geometry.Insets(75, 0, 0, 0)); 
         contentBox.setSpacing(45); // Space between the album art and the text block
 
-        // --- ALBUM ART ---
         ImageView coverView = new ImageView();
         coverView.setFitWidth(150);
         coverView.setFitHeight(150);
         coverView.setPreserveRatio(true);
         
-        // Keep the rounded corners for the album art so it blends well inside the frame
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(150, 150);
         clip.setArcWidth(12);
         clip.setArcHeight(12);
