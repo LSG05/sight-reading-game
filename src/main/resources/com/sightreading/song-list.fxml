@@ -25,7 +25,7 @@
                </content>
             </ScrollPane>
 
-            <Button mnemonicParsing="false" onAction="#handleBack" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #333333; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10;" text="Back to Home" />
+            <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #333333; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10;" text="Back to Home" />
          </children>
       </VBox>
 

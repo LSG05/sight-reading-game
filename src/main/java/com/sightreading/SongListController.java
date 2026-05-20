@@ -3,6 +3,7 @@ package com.sightreading;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -26,6 +27,7 @@ public class SongListController {
 
     @FXML private HBox carouselBox;
     @FXML private ScrollPane carouselScrollPane;
+    @FXML private Button backButton;  // return to home
 
     private Clip hoverSound; // so that native audio file will be used
 
@@ -60,6 +62,37 @@ public class SongListController {
             addSongCard("Pirates of the Caribbean", "100 BPM", null, "pirates");
         }
 
+        try {
+            // BUTTON
+            Image btnImage = new Image(getClass().getResourceAsStream("/com/sightreading/images/back_button.png"));
+            ImageView btnView = new ImageView(btnImage);
+            
+            // dimensions
+            btnView.setFitHeight(80); 
+            btnView.setPreserveRatio(true);
+        
+            backButton.setGraphic(btnView);
+            backButton.setText(""); // Wipe the text so only your image shows
+            backButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+        
+            // visual effects
+            backButton.setOnMouseEntered(e -> {
+                btnView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.6), 12, 0, 0, 0);");
+                btnView.setTranslateY(-2); 
+            });
+            
+            backButton.setOnMouseExited(e -> {
+                btnView.setStyle("");
+                btnView.setTranslateY(0);
+            });
+            
+            backButton.setOnMousePressed(e -> btnView.setTranslateY(2)); // Pushes down when clicked
+            backButton.setOnMouseReleased(e -> btnView.setTranslateY(-2));
+        
+        } catch (Exception e) {
+            System.err.println("Could not load custom Canva button asset. Check the file path.");
+        }
+
         // set first card as the default
         javafx.application.Platform.runLater(() -> {
             if (!carouselBox.getChildren().isEmpty()) {
@@ -75,103 +108,92 @@ public class SongListController {
         cardRoot.setPrefSize(300, 420);
         cardRoot.setFocusTraversable(true);
 
-        // theme colors
-        String baseCardStyle = "-fx-background-color: #14141A; -fx-background-radius: 16; -fx-border-color: #2A2A35; -fx-border-radius: 16; -fx-border-width: 1.5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 12, 0, 0, 6);";
-        String hoverCardStyle = "-fx-background-color: #1A1A24; -fx-background-radius: 16; -fx-border-color: #4488ff; -fx-border-radius: 16; -fx-border-width: 2; -fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.4), 20, 0, 0, 0); -fx-scale-x: 1.04; -fx-scale-y: 1.04;";
+        // 1. Load your Canva Frame (The Bottom Layer)
+        ImageView frameView = new ImageView();
+        try {
+            // Make sure your Canva export is named exactly this and placed in the images folder!
+            frameView.setImage(new Image(getClass().getResourceAsStream("/com/sightreading/images/card_frame.png")));
+            frameView.setFitWidth(300);
+            frameView.setFitHeight(420);
+        } catch (Exception e) {
+            System.err.println("Could not load Canva card frame. Check the file path.");
+        }
+
+        // 2. The Content Container (Holds the cover art and the text)
+        VBox contentBox = new VBox();
+        contentBox.setPrefSize(300, 420);
+        contentBox.setAlignment(Pos.TOP_CENTER);
         
-        // split song card
-        VBox cardBody = new VBox();
-        cardBody.setStyle(baseCardStyle);
-        cardBody.setPrefSize(300, 420);
-        cardBody.setAlignment(Pos.TOP_CENTER);
+        // Push everything down so it fits perfectly inside the visual borders of your Canva frame
+        // (Top padding: 75px pushes art into the blue area)
+        contentBox.setPadding(new javafx.geometry.Insets(75, 0, 0, 0)); 
+        contentBox.setSpacing(45); // Space between the album art and the text block
 
-        // IMAGE
-        StackPane imageContainer = new StackPane();
-        imageContainer.setPrefHeight(280);
-        imageContainer.setAlignment(Pos.CENTER);
-
-        // glow effect
-        javafx.scene.shape.Circle glowRing = new javafx.scene.shape.Circle(85);
-        glowRing.setStyle("-fx-fill: transparent; -fx-stroke: linear-gradient(from 0% 0% to 100% 100%, #4488ff, transparent); -fx-stroke-width: 1.5; -fx-opacity: 0.4;");
-
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(180);
-        imageView.setFitHeight(180);
-        imageView.setPreserveRatio(true);
+        // --- ALBUM ART ---
+        ImageView coverView = new ImageView();
+        coverView.setFitWidth(150);
+        coverView.setFitHeight(150);
+        coverView.setPreserveRatio(true);
         
-        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(180, 180);
+        // Keep the rounded corners for the album art so it blends well inside the frame
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(150, 150);
         clip.setArcWidth(12);
         clip.setArcHeight(12);
-        imageView.setClip(clip);
+        coverView.setClip(clip);
 
         if (imagePath != null) {
             try {
-                imageView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
+                coverView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
             } catch (Exception e) {
                 System.err.println("Could not load image: " + imagePath);
             }
         }
-        imageContainer.getChildren().addAll(glowRing, imageView);
 
-        // angle for song card
-        VBox footerBlock = new VBox();
-        footerBlock.setPrefHeight(140);
-        footerBlock.setAlignment(Pos.CENTER);
-        footerBlock.setSpacing(6);
-        
-        // asymmetric gradient as bg of lower part
-        footerBlock.setStyle("-fx-background-color: linear-gradient(from 0% 25% to 100% 0%, #1E1E24 0%, #252530 100%);" +
-                             "-fx-background-radius: 0 0 14 14;" +
-                             "-fx-border-color: #3A3A4A transparent transparent transparent;" +
-                             "-fx-border-width: 1.5;");
+        // REMINDER: will change this!!  -----------------------------------------------------
+        VBox textBox = new VBox();
+        textBox.setAlignment(Pos.CENTER);
+        textBox.setSpacing(5);
 
         // labels
         Label titleLabel = new Label(title.toUpperCase());
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 900; -fx-letter-spacing: 1px;");
+        // Changed from white to dark brown so it pops against the gold Canva plate
+        titleLabel.setStyle("-fx-text-fill: #3A2303; -fx-font-size: 17px; -fx-font-weight: 900; -fx-letter-spacing: 1px;");
         
         Label subLabel = new Label(subtitle);
-        subLabel.setStyle("-fx-text-fill: #4488ff; -fx-font-size: 14px; -fx-font-weight: bold;");
+        // REMINDER: will change this!!  -----------------------------------------------------
+        subLabel.setStyle("-fx-text-fill: #0044aa; -fx-font-size: 14px; -fx-font-weight: bold;");
 
-        footerBlock.getChildren().addAll(titleLabel, subLabel);
+        textBox.getChildren().addAll(titleLabel, subLabel);
+        contentBox.getChildren().addAll(coverView, textBox);
 
-        cardBody.getChildren().addAll(imageContainer, footerBlock);
+        // REMINDER: will change this!!  -----------------------------------------------------
+        cardRoot.getChildren().addAll(frameView, contentBox);
 
-        HBox badge = new HBox();
-        badge.setAlignment(Pos.CENTER);
-        badge.setPrefSize(95, 24);
-        badge.setMaxSize(95, 24);
-        
-        badge.setStyle("-fx-background-color: linear-gradient(to right, #4488ff, #2244aa);" +
-                       "-fx-background-radius: 4 12 12 0;" +
-                       "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 2, 2);");
-        
-        Label badgeLabel = new Label("BEGINNER");
-        badgeLabel.setStyle("-fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: 900; -fx-letter-spacing: 0.5px;");
-        badge.getChildren().add(badgeLabel);
-
-        cardRoot.getChildren().addAll(cardBody, badge);
-        StackPane.setAlignment(badge, Pos.TOP_LEFT);
-        StackPane.setMargin(badge, new javafx.geometry.Insets(12, 0, 0, -4)); // Let it hang slightly over the left boundary
-
-        // mouse hover
+        // mouse hover 
         cardRoot.setOnMouseEntered(e -> {
-            cardBody.setStyle(hoverCardStyle);
-            badge.setStyle("-fx-background-color: linear-gradient(to right, #66a3ff, #4488ff); -fx-background-radius: 4 12 12 0;");
+            cardRoot.setScaleX(1.04);
+            cardRoot.setScaleY(1.04);
+            cardRoot.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.7), 25, 0, 0, 0);");
             cardRoot.requestFocus();
         });
         
         cardRoot.setOnMouseExited(e -> {
-            cardBody.setStyle(baseCardStyle);
-            badge.setStyle("-fx-background-color: linear-gradient(to right, #4488ff, #2244aa); -fx-background-radius: 4 12 12 0;");
+            cardRoot.setScaleX(1.0);
+            cardRoot.setScaleY(1.0);
+            cardRoot.setStyle("");
         });
 
         cardRoot.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (isNowFocused) {
-                cardBody.setStyle(hoverCardStyle);
+                cardRoot.setScaleX(1.04);
+                cardRoot.setScaleY(1.04);
+                cardRoot.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.7), 25, 0, 0, 0);");
                 double hvalue = carouselBox.getChildren().indexOf(cardRoot) / (double) (Math.max(1, carouselBox.getChildren().size() - 1));
                 carouselScrollPane.setHvalue(hvalue);
             } else {
-                cardBody.setStyle(baseCardStyle);
+                cardRoot.setScaleX(1.0);
+                cardRoot.setScaleY(1.0);
+                cardRoot.setStyle("");
             }
         });
 
