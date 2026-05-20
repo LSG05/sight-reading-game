@@ -21,14 +21,11 @@ public class HomeController {
     @FXML
     private void handlePlay(ActionEvent event) {
         String enteredName = nameField.getText().trim();
-
         if (enteredName.isEmpty()) {
             errorLabel.setText("Please enter a name to play!");
         } else {
             errorLabel.setText(""); 
             Main.playerName = enteredName;
-            System.out.println("Player logged in as: " + Main.playerName);
-            
             try {
                 Main.setRoot("song-list");
             } catch (IOException e) {
