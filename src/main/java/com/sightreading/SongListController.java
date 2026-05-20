@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -68,24 +69,41 @@ public class SongListController {
     }
 
     // vertical box for each song card
+    // LAYOUT
     private void addSongCard(String title, String subtitle, String imagePath, String songId) {
-        VBox card = new VBox();
-        card.setAlignment(Pos.CENTER);
-        card.setSpacing(15);
-        card.setPrefSize(300, 400);
-        
-        String defaultStyle = "-fx-background-color: #1E1E24; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);";
-        // glow when hovered
-        String hoverStyle = "-fx-background-color: #2A2A35; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, #4488ff, 15, 0, 0, 0); -fx-scale-x: 1.05; -fx-scale-y: 1.05;";
-        
-        card.setStyle(defaultStyle);
+        StackPane cardRoot = new StackPane();
+        cardRoot.setPrefSize(300, 420);
+        cardRoot.setFocusTraversable(true);
 
-        // song preview image
+        // theme colors
+        String baseCardStyle = "-fx-background-color: #14141A; -fx-background-radius: 16; -fx-border-color: #2A2A35; -fx-border-radius: 16; -fx-border-width: 1.5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 12, 0, 0, 6);";
+        String hoverCardStyle = "-fx-background-color: #1A1A24; -fx-background-radius: 16; -fx-border-color: #4488ff; -fx-border-radius: 16; -fx-border-width: 2; -fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.4), 20, 0, 0, 0); -fx-scale-x: 1.04; -fx-scale-y: 1.04;";
+        
+        // split song card
+        VBox cardBody = new VBox();
+        cardBody.setStyle(baseCardStyle);
+        cardBody.setPrefSize(300, 420);
+        cardBody.setAlignment(Pos.TOP_CENTER);
+
+        // IMAGE
+        StackPane imageContainer = new StackPane();
+        imageContainer.setPrefHeight(280);
+        imageContainer.setAlignment(Pos.CENTER);
+
+        // glow effect
+        javafx.scene.shape.Circle glowRing = new javafx.scene.shape.Circle(85);
+        glowRing.setStyle("-fx-fill: transparent; -fx-stroke: linear-gradient(from 0% 0% to 100% 100%, #4488ff, transparent); -fx-stroke-width: 1.5; -fx-opacity: 0.4;");
+
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(200);
-        imageView.setFitHeight(200);
+        imageView.setFitWidth(180);
+        imageView.setFitHeight(180);
         imageView.setPreserveRatio(true);
         
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(180, 180);
+        clip.setArcWidth(12);
+        clip.setArcHeight(12);
+        imageView.setClip(clip);
+
         if (imagePath != null) {
             try {
                 imageView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
@@ -93,66 +111,93 @@ public class SongListController {
                 System.err.println("Could not load image: " + imagePath);
             }
         }
+        imageContainer.getChildren().addAll(glowRing, imageView);
+
+        // angle for song card
+        VBox footerBlock = new VBox();
+        footerBlock.setPrefHeight(140);
+        footerBlock.setAlignment(Pos.CENTER);
+        footerBlock.setSpacing(6);
+        
+        // asymmetric gradient as bg of lower part
+        footerBlock.setStyle("-fx-background-color: linear-gradient(from 0% 25% to 100% 0%, #1E1E24 0%, #252530 100%);" +
+                             "-fx-background-radius: 0 0 14 14;" +
+                             "-fx-border-color: #3A3A4A transparent transparent transparent;" +
+                             "-fx-border-width: 1.5;");
 
         // labels
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;");
+        Label titleLabel = new Label(title.toUpperCase());
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 900; -fx-letter-spacing: 1px;");
         
         Label subLabel = new Label(subtitle);
-        subLabel.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 16px;");
+        subLabel.setStyle("-fx-text-fill: #4488ff; -fx-font-size: 14px; -fx-font-weight: bold;");
 
-        // song card selection 
-        card.getChildren().addAll(imageView, titleLabel, subLabel);
-        card.setFocusTraversable(true);
+        footerBlock.getChildren().addAll(titleLabel, subLabel);
+
+        cardBody.getChildren().addAll(imageContainer, footerBlock);
+
+        HBox badge = new HBox();
+        badge.setAlignment(Pos.CENTER);
+        badge.setPrefSize(95, 24);
+        badge.setMaxSize(95, 24);
         
-        // mouse hover and trigger
-        card.setOnMouseEntered(e -> {
-            card.setStyle(hoverStyle);
-            if (hoverSound != null) {
-                hoverSound.setFramePosition(0); // rewind sound
-                hoverSound.start();             // play clip natively
-            }
-            card.requestFocus();    // syncs keyboard and mouse hover
+        badge.setStyle("-fx-background-color: linear-gradient(to right, #4488ff, #2244aa);" +
+                       "-fx-background-radius: 4 12 12 0;" +
+                       "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 2, 2);");
+        
+        Label badgeLabel = new Label("BEGINNER");
+        badgeLabel.setStyle("-fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: 900; -fx-letter-spacing: 0.5px;");
+        badge.getChildren().add(badgeLabel);
+
+        cardRoot.getChildren().addAll(cardBody, badge);
+        StackPane.setAlignment(badge, Pos.TOP_LEFT);
+        StackPane.setMargin(badge, new javafx.geometry.Insets(12, 0, 0, -4)); // Let it hang slightly over the left boundary
+
+        // mouse hover
+        cardRoot.setOnMouseEntered(e -> {
+            cardBody.setStyle(hoverCardStyle);
+            badge.setStyle("-fx-background-color: linear-gradient(to right, #66a3ff, #4488ff); -fx-background-radius: 4 12 12 0;");
+            cardRoot.requestFocus();
         });
         
-        card.setOnMouseExited(e -> card.setStyle(defaultStyle));
+        cardRoot.setOnMouseExited(e -> {
+            cardBody.setStyle(baseCardStyle);
+            badge.setStyle("-fx-background-color: linear-gradient(to right, #4488ff, #2244aa); -fx-background-radius: 4 12 12 0;");
+        });
 
-        card.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+        cardRoot.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (isNowFocused) {
-                card.setStyle(hoverStyle);
-                double hvalue = carouselBox.getChildren().indexOf(card) / (double) (Math.max(1, carouselBox.getChildren().size() - 1));
+                cardBody.setStyle(hoverCardStyle);
+                double hvalue = carouselBox.getChildren().indexOf(cardRoot) / (double) (Math.max(1, carouselBox.getChildren().size() - 1));
                 carouselScrollPane.setHvalue(hvalue);
             } else {
-                card.setStyle(defaultStyle);
+                cardBody.setStyle(baseCardStyle);
             }
         });
 
-        // mouse click to play selected song
-        card.setOnMouseClicked(e -> startGame(songId));
+        cardRoot.setOnMouseClicked(e -> startGame(songId));
 
-        // scrolling using keyboard
-        // KEYBOARD CONTROLLS
-        card.setOnKeyPressed(e -> {
+        cardRoot.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) { // enter key to play selected song
                 startGame(songId);  
             } else if (e.getCode() == KeyCode.RIGHT) {  // right arrow key to play selected song
-                focusNext(card);    
+                focusNext(cardRoot);    
             } else if (e.getCode() == KeyCode.LEFT) {   // left arrow key to play selected song
-                focusPrevious(card);    
+                focusPrevious(cardRoot);    
             }
         });
 
-        carouselBox.getChildren().add(card);
+        carouselBox.getChildren().add(cardRoot);
     }
 
-    private void focusNext(VBox currentCard) {
+    private void focusNext(StackPane currentCard) {
         int index = carouselBox.getChildren().indexOf(currentCard);
         if (index < carouselBox.getChildren().size() - 1) {
             carouselBox.getChildren().get(index + 1).requestFocus();
         }
     }
 
-    private void focusPrevious(VBox currentCard) {
+    private void focusPrevious(StackPane currentCard) {
         int index = carouselBox.getChildren().indexOf(currentCard);
         if (index > 0) {
             carouselBox.getChildren().get(index - 1).requestFocus();
