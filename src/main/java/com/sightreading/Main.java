@@ -12,6 +12,7 @@ public class Main extends Application {
 
     private static Scene scene;
     public static String playerName = null;
+    public static String selectedSongId = "twinkle"; 
 
     @Override
     public void start(Stage primaryStage) throws Exception {

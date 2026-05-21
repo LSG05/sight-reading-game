@@ -24,12 +24,11 @@ public class GameController implements Initializable {
 
     // The song to load. In a later phase this will be passed in
     // from a song selection screen. For now it is hardcoded.
-    private static final String SONG_FOLDER = "songs/twinkle";
-    private static String SONG_PATH_STRING = "/com/sightreading/songs/twinkle/audio.wav"; // hard code temporary
+    private String songFolder;
+    private AudioService audioService;
 
     // Declare variables from masterclock and audioservice
     private MasterClock masterClock = new MasterClock();
-    private AudioService audioService = new AudioService(SONG_PATH_STRING);
 
     // Flattened note list for reading, remove later
     private List<NoteData> songNoteList;
@@ -81,9 +80,15 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // grab the selected song from song list
+        String songId = Main.selectedSongId;
+        songFolder = "songs/" + songId;
+        String songPathString = "/com/sightreading/songs/" + songId + "/audio.wav";
+    
+        audioService = new AudioService(songPathString);
 
         // 1. Parse notes.json for the selected song
-        songData = NoteLoader.load(SONG_FOLDER);
+        songData = NoteLoader.load(songFolder);
 
         // 2. Pre-load every image for this song into RAM right now
         preloadAllImages();
@@ -142,7 +147,7 @@ public class GameController implements Initializable {
     private void preloadAllImages() {
         for (LineData line : songData.lines) {
             String resourcePath = "/com/sightreading/"
-                + SONG_FOLDER + "/images/" + line.imageFile;
+                + songFolder + "/images/" + line.imageFile;
 
             URL imageUrl = getClass().getResource(resourcePath);
 

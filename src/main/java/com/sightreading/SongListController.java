@@ -182,6 +182,7 @@ public class SongListController {
 
     private void startGame(String songId) {
         System.out.println("Starting song: " + songId);
+        Main.selectedSongId = songId;       // song will change based on song ID
         try {
             Main.setRoot("game");
         } catch (IOException e) {
