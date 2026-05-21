@@ -51,7 +51,7 @@
         { "targetTimeMs": 30000, "pixelX": 269, "noteName": "A" },
         { "targetTimeMs": 30750, "pixelX": 326, "noteName": "A" },
         { "targetTimeMs": 31500, "pixelX": 383, "noteName": "G" },
-        { "targetTimeMs": 32250, "pixelX": 454, "noteName": "F" },
+        { "targetTimeMs": 33000, "pixelX": 454, "noteName": "F" },
         { "targetTimeMs": 33750, "pixelX": 494, "noteName": "F" },
         { "targetTimeMs": 34500, "pixelX": 534, "noteName": "E" },
         { "targetTimeMs": 35250, "pixelX": 578, "noteName": "E" },
