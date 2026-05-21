@@ -27,6 +27,7 @@ public class InputHandler {
         //UPDATE: added check to register stray hits that don't correspond to any note (currentNote == null) 
         if (currentNote == null || currentNote.processed) {
             gameController.getScoreManager().registerStray(); 
+            gameController.triggerMissFeedback(); // triggers red glow for feedback
             return;
         }
 
@@ -42,6 +43,9 @@ public class InputHandler {
             currentNote.processed = true;
             currentNote.isHit = true;
             gameController.getScoreManager().registerHit(timingError);
+            
+            gameController.triggerHitFeedback(); // triggers blue flash for correct hit
+            
             System.out.println("HIT registered for note: " + currentNote.noteName);
         } 
         
@@ -50,6 +54,9 @@ public class InputHandler {
             currentNote.processed = true;
             currentNote.isHit = false;
             gameController.getScoreManager().registerMiss();
+            
+            gameController.triggerMissFeedback(); // triggers red flash for wrong key
+            
             System.out.println("MISS registered for note: " + currentNote.noteName + " (pressed: " + keyPressed + ")");
         }
 

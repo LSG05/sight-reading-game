@@ -6,18 +6,22 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class GameController implements Initializable {
 
     @FXML private ImageView sheetMusicView;
     @FXML private Rectangle hitBox;
+    @FXML private Rectangle flashOverlay; // added for visual feedback
 
     private final List<Image> preloadedImages = new ArrayList<>();
     private SongData songData;
@@ -66,8 +70,7 @@ public class GameController implements Initializable {
             applyParallax(elapsedMs);
             
             // logic here migrated to handleSongFinished();
-            /* 
-            //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
+            /* //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
             int lastLineIndex = songData.lines.size() - 1;
             int lastNoteIndex = songData.lines.get(lastLineIndex).notes.size() - 1;
             if(currentLineIndex >= lastLineIndex && noteIndexInLine >= lastNoteIndex &&
@@ -170,8 +173,24 @@ public class GameController implements Initializable {
         System.out.println("Done. " + preloadedImages.size() + " images in RAM.");
     }
 
-    // --- Stubs for Phase 2 ---
+    // VISUAL FEEDBACK ---------------
+    public void triggerHitFeedback() {
+        flashOverlay.setFill(Color.web("#4488ff")); // Electric Blue
+        FadeTransition ft = new FadeTransition(Duration.millis(300), flashOverlay);
+        ft.setFromValue(0.25); // Subtle transparent flash
+        ft.setToValue(0.0);    // Fade back to invisible
+        ft.play();
+    }
 
+    public void triggerMissFeedback() {
+        flashOverlay.setFill(Color.web("#ff4444")); // Danger Red
+        FadeTransition ft = new FadeTransition(Duration.millis(300), flashOverlay);
+        ft.setFromValue(0.35); // Slightly darker flash for a mistake
+        ft.setToValue(0.0);
+        ft.play();
+    }
+
+    // --- Stubs for Phase 2 ---
     public void swapToLine(int lineIndex) {
         if (lineIndex >= 0 && lineIndex < preloadedImages.size()) {
             sheetMusicView.setImage(preloadedImages.get(lineIndex));
@@ -245,8 +264,7 @@ public class GameController implements Initializable {
             
 
         // this logic causes the index to not advance at all. it stays at C.
-        /* 
-        if (noteIndexInLine < currentLine.notes.size() -1) {
+        /* if (noteIndexInLine < currentLine.notes.size() -1) {
             nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
         } else {
             nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
@@ -280,8 +298,7 @@ public class GameController implements Initializable {
         }
             */
 
-        /* 
-            if (elapsedTime >= currentLine.notes.get(1).targetTimeMs - 50 && elapsedTime >= currentNote.targetTimeMs - 50) {
+        /* if (elapsedTime >= currentLine.notes.get(1).targetTimeMs - 50 && elapsedTime >= currentNote.targetTimeMs - 50) {
                 if (noteIndexInLine < currentLine.notes.size() - 1) {
                     noteIndexInLine++;
                     System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
@@ -325,6 +342,7 @@ public class GameController implements Initializable {
             currentNote.processed = true;
             currentNote.isHit = false; 
             scoreManager.registerMiss();
+            triggerMissFeedback(); // trigger red glow for missed notes
             System.out.println("Note EXPIRED and missed: " + currentNote.noteName + " (elapsed: " + elapsedMS + "ms, target: " + currentNote.targetTimeMs + "ms)");
         }
     }
