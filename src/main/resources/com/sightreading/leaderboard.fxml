@@ -6,13 +6,13 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="900.0" prefWidth="1200.0" spacing="30.0" style="-fx-background-image: url('/com/sightreading/images/bg.jpg'); -fx-background-size: cover; -fx-background-position: center;"
+<VBox alignment="CENTER" prefHeight="900.0" prefWidth="1200.0" spacing="30.0" stylesheets="@styles.css" style="-fx-background-image: url('/com/sightreading/images/bg.jpg'); -fx-background-size: cover; -fx-background-position: center;"
 xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sightreading.LeaderboardController">
    <children>
       
       <ImageView fx:id="titleImage" fitHeight="150.0" fitWidth="600.0" preserveRatio="true">
          <image>
-            <Image url="@images/leaderboard_title.png" />
+            <Image url="@images/leaderboard-button.png" />
          </image>
       </ImageView>
 
@@ -23,8 +23,7 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
          </content>
       </ScrollPane>
 
-      <Button mnemonicParsing="false" onAction="#handleBack" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #555555; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10;"
-text="Back to Home" />
+      <Button mnemonicParsing="false" onAction="#handleBack" text="" prefHeight="60.0" prefWidth="120.0" styleClass="blue-glow-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/back_arrow.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
       
    </children>
 </VBox>

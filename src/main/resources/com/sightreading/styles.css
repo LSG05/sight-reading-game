@@ -55,3 +55,15 @@
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
+
+/* leaderboard back button */
+.blue-glow-button {
+    -fx-transition: -fx-effect 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+
+.blue-glow-button:hover {
+    /* glow blue shadow when hovered */
+    -fx-effect: dropshadow(three-pass-box, rgba(68, 136, 255, 0.8), 20, 0.5, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
