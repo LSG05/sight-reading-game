@@ -14,6 +14,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -21,7 +24,10 @@ public class GameController implements Initializable {
 
     @FXML private ImageView sheetMusicView;
     @FXML private Rectangle hitBox;
-    @FXML private Rectangle flashOverlay; // added for visual feedback
+    @FXML private Rectangle flashOverlay; 
+
+    private RadialGradient hitGradient;
+    private RadialGradient missGradient;
 
     private final List<Image> preloadedImages = new ArrayList<>();
     private SongData songData;
@@ -68,20 +74,6 @@ public class GameController implements Initializable {
             updateLineDisplay();
 
             applyParallax(elapsedMs);
-            
-            // logic here migrated to handleSongFinished();
-            /* //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
-            int lastLineIndex = songData.lines.size() - 1;
-            int lastNoteIndex = songData.lines.get(lastLineIndex).notes.size() - 1;
-            if(currentLineIndex >= lastLineIndex && noteIndexInLine >= lastNoteIndex &&
-            songData.lines.get(lastLineIndex).notes.get(lastNoteIndex).processed){
-                audioService.stopSong();
-                masterClock.stop();
-                this.stop();
-                animationTimer.stop();
-                resetSongStates(); // reset all note states for potential replay
-            }
-            */
         }
     };
 
@@ -111,19 +103,27 @@ public class GameController implements Initializable {
 
         System.out.println("Phase 1 complete. Window ready.");
 
-        // // 5. Create noteslist for easy access of notes from json file, will remove due to redundancy
-        // songNoteList = new ArrayList<>();
-        // for(LineData line: songData.lines){
-        //     for(NoteData note: line.notes){
-        //         if(note != null){
-        //             songNoteList.add(note);
-        //         }
-        //     }
-        // }
-
         // initalize score manager and input handler with reference to this gamecontroller for ui updates
         scoreManager = new ScoreManager(this);
         inputHandler = new InputHandler(this);
+
+        // 5. VISUAL FEEDBACK: VIGNETTE
+        // blue
+        Stop[] hitStops = new Stop[] {
+            new Stop(0.5, Color.TRANSPARENT), // center 50% of the screen is transparent
+            new Stop(1.0, Color.web("#4488ff")) // fades into solid blue at the edges
+        };
+        // circular "frame"
+        hitGradient = new RadialGradient(0, 0, 0.5, 0.5, 0.75, true, CycleMethod.NO_CYCLE, hitStops);
+
+        // red
+        Stop[] missStops = new Stop[] {
+            new Stop(0.5, Color.TRANSPARENT),
+            new Stop(1.0, Color.web("#ff4444")) 
+        };
+        missGradient = new RadialGradient(0, 0, 0.5, 0.5, 0.75, true, CycleMethod.NO_CYCLE, missStops);
+        
+        flashOverlay.setEffect(null); 
 
         // 6. Load Audio
         audioService.loadSong();
@@ -134,12 +134,11 @@ public class GameController implements Initializable {
         animationTimer.start();
 
         // 8. Closing Methods
-        //UPDATE: moved this block to the end of the handle method in animation timer, to ensure it is checked every frame and not just at the start of the song
         // set focus to the sheet music pane so it can receive key events immediately
         Platform.runLater(() -> {
-        sheetMusicView.setFocusTraversable(true); // Allow it to be focused
-        sheetMusicView.requestFocus();           // Grab the focus immediately
-    });
+            sheetMusicView.setFocusTraversable(true); 
+            sheetMusicView.requestFocus();           
+        });
 
         printActiveThreads();    
     }
@@ -173,19 +172,19 @@ public class GameController implements Initializable {
         System.out.println("Done. " + preloadedImages.size() + " images in RAM.");
     }
 
-    // VISUAL FEEDBACK ---------------
+    // UPDATED: VISUAL FEEDBACK
     public void triggerHitFeedback() {
-        flashOverlay.setFill(Color.web("#4488ff")); // Electric Blue
-        FadeTransition ft = new FadeTransition(Duration.millis(300), flashOverlay);
-        ft.setFromValue(0.25); // Subtle transparent flash
-        ft.setToValue(0.0);    // Fade back to invisible
+        flashOverlay.setFill(hitGradient); // use circular blue gradient
+        FadeTransition ft = new FadeTransition(Duration.millis(400), flashOverlay);
+        ft.setFromValue(0.50); // glow brightness
+        ft.setToValue(0.0);    
         ft.play();
     }
 
     public void triggerMissFeedback() {
-        flashOverlay.setFill(Color.web("#ff4444")); // Danger Red
-        FadeTransition ft = new FadeTransition(Duration.millis(300), flashOverlay);
-        ft.setFromValue(0.35); // Slightly darker flash for a mistake
+        flashOverlay.setFill(missGradient); // use circular red gradient
+        FadeTransition ft = new FadeTransition(Duration.millis(400), flashOverlay);
+        ft.setFromValue(0.50); 
         ft.setToValue(0.0);
         ft.play();
     }
@@ -203,43 +202,43 @@ public class GameController implements Initializable {
     }
 
     public double computeHitBox(long elapsedMs) {
-    // 1. Flatten all notes to easily find where we are in time
-    List<NoteData> allNotes = new ArrayList<>();
-    for (LineData line : songData.lines) {
-        allNotes.addAll(line.notes);
-    }
-
-    // 2. Find which two notes the current time falls between
-    int activeIndex = 0;
-    for (int i = 0; i < allNotes.size() - 1; i++) {
-        if (elapsedMs >= allNotes.get(i).targetTimeMs && elapsedMs < allNotes.get(i + 1).targetTimeMs) {
-            activeIndex = i;
-            break;
+        // 1. Flatten all notes to easily find where we are in time
+        List<NoteData> allNotes = new ArrayList<>();
+        for (LineData line : songData.lines) {
+            allNotes.addAll(line.notes);
         }
-    }
 
-    // Handle end of song
-    if (elapsedMs >= allNotes.get(allNotes.size() - 1).targetTimeMs) {
-        return allNotes.get(allNotes.size() - 1).pixelX;
-    }
+        // 2. Find which two notes the current time falls between
+        int activeIndex = 0;
+        for (int i = 0; i < allNotes.size() - 1; i++) {
+            if (elapsedMs >= allNotes.get(i).targetTimeMs && elapsedMs < allNotes.get(i + 1).targetTimeMs) {
+                activeIndex = i;
+                break;
+            }
+        }
 
-    NoteData prev = allNotes.get(activeIndex);
-    NoteData next = allNotes.get(activeIndex + 1);
+        // Handle end of song
+        if (elapsedMs >= allNotes.get(allNotes.size() - 1).targetTimeMs) {
+            return allNotes.get(allNotes.size() - 1).pixelX;
+        }
 
-    // 3. Determine if we are moving to a new line
-    // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line!
-    if (next.pixelX < prev.pixelX) {
-        // We are in the "gap" between lines. 
-        // We calculate a fake target far to the right so it glides off screen.
-        double fakeNextX = 850; // slightly off the right edge
+        NoteData prev = allNotes.get(activeIndex);
+        NoteData next = allNotes.get(activeIndex + 1);
+
+        // 3. Determine if we are moving to a new line
+        // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line!
+        if (next.pixelX < prev.pixelX) {
+            // We are in the "gap" between lines. 
+            // We calculate a fake target far to the right so it glides off screen.
+            double fakeNextX = 850; // slightly off the right edge
+            double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
+            return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 50;
+        }
+
+        // 4. Standard Interpolation
         double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-        return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 50;
+        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 50;
     }
-
-    // 4. Standard Interpolation
-    double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-    return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 50;
-}
 
     //new update line index method
     private void advanceNoteIndex() {
@@ -253,7 +252,6 @@ public class GameController implements Initializable {
         
         long nextNoteTime;
 
-
         if(noteIndexInLine == 0){
             nextNoteTime = currentLine.notes.get(1).targetTimeMs; // time of second note in current line
         } else if (noteIndexInLine < currentLine.notes.size() -1) {
@@ -262,15 +260,6 @@ public class GameController implements Initializable {
             nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
         }
             
-
-        // this logic causes the index to not advance at all. it stays at C.
-        /* if (noteIndexInLine < currentLine.notes.size() -1) {
-            nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
-        } else {
-            nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
-        }
-        */
-
         System.out.println("nextNoteTime: " + nextNoteTime + "ms, elapsedTime: " + elapsedTime + "ms");
 
         // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
@@ -285,38 +274,9 @@ public class GameController implements Initializable {
                 currentLineIndex++;
             }
         }
-
-        /* outdated logic
-        if (elapsedTime == nextNoteTime - 50) {
-            if (noteIndexInLine < currentLine.notes.size() - 1) {
-                noteIndexInLine++;
-                System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
-            } else {
-                noteIndexInLine = 0;
-                currentLineIndex++;
-            }
-        }
-            */
-
-        /* if (elapsedTime >= currentLine.notes.get(1).targetTimeMs - 50 && elapsedTime >= currentNote.targetTimeMs - 50) {
-                if (noteIndexInLine < currentLine.notes.size() - 1) {
-                    noteIndexInLine++;
-                    System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
-                } else {
-                    noteIndexInLine = 0;
-                    currentLineIndex++;
-                    System.out.println("Advanced to line index " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
-                }
-            }
-        */
-        
     }
 
     private void updateLineDisplay() {
-        /*if (currentLineIndex >= 0 && currentLineIndex < songData.lines.size()) {
-            swapToLine(this.currentLineIndex);
-        } */
-
         long elapsedMs = (long) audioService.getCurrentTimeMs();
         LineData lineData = songData.lines.get(currentLineIndex);
         NoteData lastNoteOfLine = lineData.notes.get(lineData.notes.size() - 1);
@@ -342,7 +302,7 @@ public class GameController implements Initializable {
             currentNote.processed = true;
             currentNote.isHit = false; 
             scoreManager.registerMiss();
-            triggerMissFeedback(); // trigger red glow for missed notes
+            triggerMissFeedback(); // Trigger visual red flash for an expired note!
             System.out.println("Note EXPIRED and missed: " + currentNote.noteName + " (elapsed: " + elapsedMS + "ms, target: " + currentNote.targetTimeMs + "ms)");
         }
     }
