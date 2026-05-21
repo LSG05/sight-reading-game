@@ -13,7 +13,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -23,7 +22,6 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 public class GameController implements Initializable {
@@ -282,7 +280,7 @@ public class GameController implements Initializable {
 
         // 4. Standard Interpolation
         double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 50;
+        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 15;
     }
 
     //new update line index method
