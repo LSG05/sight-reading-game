@@ -13,15 +13,18 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 public class GameController implements Initializable {
@@ -34,6 +37,10 @@ public class GameController implements Initializable {
     // UI score Elements
     @FXML private Label scoreLabel;
     @FXML private Label comboLabel;
+
+    // End Game Overlay Elements
+    @FXML private StackPane resultsOverlay;
+    @FXML private Label finalScoreLabel;
 
     // gradient objects for the cinematic vignette glow
     private RadialGradient hitGradient;
@@ -78,14 +85,14 @@ public class GameController implements Initializable {
             setHitBoxX(computedX);
             updateLineDisplay();
 
-            // end of song
+            // End Game Trigger
             int lastLine = songData.lines.size() - 1;
             int lastNote = songData.lines.get(lastLine).notes.size() - 1;
             NoteData veryLastNote = songData.lines.get(lastLine).notes.get(lastNote);
             
-            // final note
+            // If the absolute final note has been processed (hit or missed)
             if (currentLineIndex == lastLine && noteIndexInLine == lastNote && veryLastNote.processed) {
-                // adds a 1.5-second buffer after the final note so the game doesn't instantly cut off
+                // Add a 1.5-second buffer after the final note so the game doesn't instantly cut off
                 if (elapsedMs > veryLastNote.targetTimeMs + 1500) {
                     handleSongFinished();
                 }
@@ -280,7 +287,7 @@ public class GameController implements Initializable {
 
         // 4. Standard Interpolation
         double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 15;
+        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 50;
     }
 
     //new update line index method
@@ -302,14 +309,6 @@ public class GameController implements Initializable {
         } else {
             nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; 
         }
-            
-            
-        System.out.println("nextNoteTime: " + nextNoteTime + "ms, elapsedTime: " + elapsedTime + "ms");
-
-        // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
-        // for this note (to prevent multiple advances for the same note due to animationtimer's frequent calls)
-
-        System.out.println("nextNoteTime: " + nextNoteTime + "ms, elapsedTime: " + elapsedTime + "ms");
 
         // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
         // for this note (to prevent multiple advances for the same note due to animationtimer's frequent calls)
@@ -356,6 +355,7 @@ public class GameController implements Initializable {
 
     @FXML
     public void onKeyPressed(KeyEvent event) {
+        if (resultsOverlay.isVisible()) return;
         inputHandler.handleKeyPressed(event);
     }
  
@@ -384,8 +384,27 @@ public class GameController implements Initializable {
     private void handleRestart() {
         cleanup();
         try {
-            // To restart perfectly, reload the FXML scene from scratch
             Main.setRoot("game");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleGoToSongs() {
+        cleanup();
+        try {
+            Main.setRoot("song-list");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleGoToLeaderboard() {
+        cleanup();
+        try {
+            Main.setRoot("leaderboard");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -398,22 +417,23 @@ public class GameController implements Initializable {
         masterClock.stop();
         animationTimer.stop();
     
-        // get the final score from the ScoreManager
+        // grab the final score from the ScoreManager
         int finalScore = scoreManager.getScore();
         System.out.println("SONG FINISHED! Final Score: " + finalScore);
 
         // save to LeaderboardManager
-        // uses the playerName from Main, or defaults to "guest" if it hasn't been set
         String pName = (Main.playerName != null && !Main.playerName.isEmpty()) ? Main.playerName : "Guest";
         LeaderboardManager.addScore(pName, finalScore);
         
-        // switch to the leaderboard scene automatically
+        // trigger the Overlay Fade-In instead of changing the screen
         Platform.runLater(() -> {
-            try {
-                Main.setRoot("leaderboard");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            finalScoreLabel.setText(String.valueOf(finalScore)); // Inject the actual score number
+            resultsOverlay.setVisible(true);
+            resultsOverlay.setOpacity(0.0);
+            
+            FadeTransition ft = new FadeTransition(Duration.millis(800), resultsOverlay);
+            ft.setToValue(1.0);
+            ft.play();
         });
     }
 
