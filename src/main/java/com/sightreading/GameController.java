@@ -7,25 +7,37 @@ import java.util.ResourceBundle;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 public class GameController implements Initializable {
 
+    @FXML private AnchorPane rootPane; // Used to spawn floating text
     @FXML private ImageView sheetMusicView;
     @FXML private Rectangle hitBox;
     @FXML private Rectangle flashOverlay; 
+    
+    // UI score Elements
+    @FXML private Label scoreLabel;
+    @FXML private Label comboLabel;
 
+    // gradient objects for the cinematic vignette glow
     private RadialGradient hitGradient;
     private RadialGradient missGradient;
 
@@ -40,14 +52,10 @@ public class GameController implements Initializable {
     // Declare variables from masterclock and audioservice
     private MasterClock masterClock = new MasterClock();
 
-    // Flattened note list for reading, remove later
-    private List<NoteData> songNoteList;
-
-    // declare index variables for iterating lines and notes
     private int noteIndexInLine = 0;
     private int currentLineIndex = 0;
+    private int previousScore = 0; // tracks the score to calculate point additions/deductions
 
-    // ms window for a note to be considered a hit, will be used in input handling
     private final static int MISS_TOLERANCE_MS = 200; 
 
     // Input and UI handling, add ui controller soon
@@ -61,9 +69,8 @@ public class GameController implements Initializable {
         @Override
         public void handle(long now){
             if (!masterClock.isRunning()) return;
-            long elapsedMs = (long) audioService.getCurrentTimeMs(); // Use audio service time for synchronization
+            long elapsedMs = (long) audioService.getCurrentTimeMs(); 
             
-            //check if note is expired
             checkNoteExpiry(elapsedMs);
 
             //move index forward once note is processed
@@ -72,25 +79,19 @@ public class GameController implements Initializable {
             double computedX = computeHitBox(elapsedMs);
             setHitBoxX(computedX);
             updateLineDisplay();
-
-            applyParallax(elapsedMs);
         }
     };
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // grab the selected song from song list
         String songId = Main.selectedSongId;
         songFolder = "songs/" + songId;
         String songPathString = "/com/sightreading/songs/" + songId + "/audio.wav";
     
         audioService = new AudioService(songPathString, this);
 
-        // 1. Parse notes.json for the selected song
         songData = NoteLoader.load(songFolder);
 
-        // 2. Pre-load every image for this song into RAM right now
         preloadAllImages();
 
         // 3. Display the first line
@@ -98,37 +99,28 @@ public class GameController implements Initializable {
             sheetMusicView.setImage(preloadedImages.get(0));
         }
 
-        // 4. Park the hitbox at the left edge
         hitBox.setTranslateX(0);
 
-        System.out.println("Phase 1 complete. Window ready.");
-
-        // initalize score manager and input handler with reference to this gamecontroller for ui updates
         scoreManager = new ScoreManager(this);
         inputHandler = new InputHandler(this);
 
-        // 5. VISUAL FEEDBACK: VIGNETTE
-        // blue
+        // VIGNETTE
         Stop[] hitStops = new Stop[] {
-            new Stop(0.5, Color.TRANSPARENT), // center 50% of the screen is transparent
-            new Stop(1.0, Color.web("#4488ff")) // fades into solid blue at the edges
+            new Stop(0.5, Color.TRANSPARENT), 
+            new Stop(1.0, Color.web("#4488ff")) 
         };
-        // circular "frame"
         hitGradient = new RadialGradient(0, 0, 0.5, 0.5, 0.75, true, CycleMethod.NO_CYCLE, hitStops);
 
-        // red
         Stop[] missStops = new Stop[] {
             new Stop(0.5, Color.TRANSPARENT),
             new Stop(1.0, Color.web("#ff4444")) 
         };
-        missGradient = new RadialGradient(0, 0, 0.5, 0.5, 0.75, true, CycleMethod.NO_CYCLE, missStops);
+        missGradient = new RadialGradient(  0, 0, 0.5, 0.5, 0.75, true, CycleMethod.NO_CYCLE, missStops);
         
         flashOverlay.setEffect(null); 
 
         // 6. Load Audio
         audioService.loadSong();
-
-        // 7. Run sequence
         audioService.playSong();
         masterClock.start();
         animationTimer.start();
@@ -139,23 +131,11 @@ public class GameController implements Initializable {
             sheetMusicView.setFocusTraversable(true); 
             sheetMusicView.requestFocus();           
         });
-
-        printActiveThreads();    
-    }
-
-    private void printActiveThreads() {
-        System.out.println("--- ACTIVE THREADS REPORT ---");
-        Thread.getAllStackTraces().keySet().forEach(t -> {
-            System.out.println("Thread Name: " + t.getName() + " | Priority: " + t.getPriority() + " | Is Daemon: " + t.isDaemon());
-        });
-        System.out.println("-----------------------------");
     }
 
     private void preloadAllImages() {
         for (LineData line : songData.lines) {
-            String resourcePath = "/com/sightreading/"
-                + songFolder + "/images/" + line.imageFile;
-
+            String resourcePath = "/com/sightreading/" + songFolder + "/images/" + line.imageFile;
             URL imageUrl = getClass().getResource(resourcePath);
 
             if (imageUrl == null) {
@@ -163,37 +143,91 @@ public class GameController implements Initializable {
                 continue;
             }
 
-            // false = load immediately, not lazily in the background
             Image img = new Image(imageUrl.toExternalForm(), false);
             preloadedImages.add(img);
-            System.out.println("Pre-loaded: " + line.imageFile);
         }
-
-        System.out.println("Done. " + preloadedImages.size() + " images in RAM.");
     }
 
-    // UPDATED: VISUAL FEEDBACK
+    // VISUAL FEEDBACK
     public void triggerHitFeedback() {
-        flashOverlay.setFill(hitGradient); // use circular blue gradient
+        flashOverlay.setFill(hitGradient); 
         FadeTransition ft = new FadeTransition(Duration.millis(400), flashOverlay);
-        ft.setFromValue(0.50); // glow brightness
+        ft.setFromValue(0.65); 
         ft.setToValue(0.0);    
         ft.play();
     }
 
     public void triggerMissFeedback() {
-        flashOverlay.setFill(missGradient); // use circular red gradient
+        flashOverlay.setFill(missGradient); 
         FadeTransition ft = new FadeTransition(Duration.millis(400), flashOverlay);
-        ft.setFromValue(0.50); 
+        ft.setFromValue(0.75); 
         ft.setToValue(0.0);
         ft.play();
     }
 
-    // --- Stubs for Phase 2 ---
+    // called automatically by ScoreManager when a hit/miss happens
+    public void updateUI(int score, int combo, String rating) {
+        Platform.runLater(() -> {
+            // 1. update the static Hub labels
+            scoreLabel.setText("Score: " + score);
+            comboLabel.setText("Combo: " + combo);
+
+            // 2. calculate point difference
+            int delta = score - previousScore;
+            
+            // 3. ALWAYS spawn floating text, even if score didn't change 
+            spawnFloatingScore(delta, rating);
+            
+            previousScore = score; // update history for the next hit
+        });
+    }
+
+    private void spawnFloatingScore(int delta, String rating) {
+        // Build the text cleanly
+        String pointText = "";
+        if (delta > 0) {
+            pointText = "+" + delta;
+        } else if (delta < 0) {
+            pointText = String.valueOf(delta);
+        }
+
+        String finalString = rating;
+        if (!pointText.isEmpty()) {
+            finalString += "\n" + pointText; 
+        }
+
+        Label popup = new Label(finalString);
+        popup.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        
+        // green/blue for positive, red for misses or negative points
+        String color = (rating.equals("MISS") || rating.equals("STRAY") || delta < 0) ? "#ff4444" : "#44ff44"; 
+        popup.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        popup.setEffect(new javafx.scene.effect.DropShadow(4, Color.BLACK));
+        popup.setMouseTransparent(true); 
+
+        // spawn it directly over the moving hit-box! 
+        double spawnX = 200 + hitBox.getTranslateX() - 15; 
+        popup.setLayoutX(spawnX);
+        popup.setLayoutY(250); 
+
+        rootPane.getChildren().add(popup);
+
+        // animation: float up while fading out
+        TranslateTransition floatUp = new TranslateTransition(Duration.millis(500), popup);
+        floatUp.setByY(-40); 
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(500), popup);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+
+        ParallelTransition pt = new ParallelTransition(popup, floatUp, fadeOut);
+        pt.setOnFinished(e -> rootPane.getChildren().remove(popup)); 
+        pt.play();
+    }
+
     public void swapToLine(int lineIndex) {
         if (lineIndex >= 0 && lineIndex < preloadedImages.size()) {
             sheetMusicView.setImage(preloadedImages.get(lineIndex));
-            System.out.println("Swapped to line " + lineIndex);
         }
     }
 
@@ -228,9 +262,7 @@ public class GameController implements Initializable {
         // 3. Determine if we are moving to a new line
         // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line!
         if (next.pixelX < prev.pixelX) {
-            // We are in the "gap" between lines. 
-            // We calculate a fake target far to the right so it glides off screen.
-            double fakeNextX = 850; // slightly off the right edge
+            double fakeNextX = 850; 
             double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
             return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 50;
         }
@@ -247,28 +279,33 @@ public class GameController implements Initializable {
         long elapsedTime = (long) audioService.getCurrentTimeMs();
 
         if(currentNote == currentLine.notes.get(currentLine.notes.size() - 1) && currentLineIndex == songData.lines.size() - 1){
-            return; // if we are at the last note of the last line, do not advance further
+            return; 
         }
         
         long nextNoteTime;
 
         if(noteIndexInLine == 0){
-            nextNoteTime = currentLine.notes.get(1).targetTimeMs; // time of second note in current line
+            nextNoteTime = currentLine.notes.get(1).targetTimeMs; 
         } else if (noteIndexInLine < currentLine.notes.size() -1) {
             nextNoteTime = currentLine.notes.get(noteIndexInLine + 1).targetTimeMs;
         } else {
-            nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; // time of first note in next line
+            nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; 
         }
+            
             
         System.out.println("nextNoteTime: " + nextNoteTime + "ms, elapsedTime: " + elapsedTime + "ms");
 
         // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
         // for this note (to prevent multiple advances for the same note due to animationtimer's frequent calls)
+
+        System.out.println("nextNoteTime: " + nextNoteTime + "ms, elapsedTime: " + elapsedTime + "ms");
+
+        // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
+        // for this note (to prevent multiple advances for the same note due to animationtimer's frequent calls)
         if (elapsedTime >= nextNoteTime - 190 && !currentNote.isSwitched) {
-            currentNote.isSwitched = true; // add a flag to prevent multiple switches for the same note
+            currentNote.isSwitched = true; 
             if (noteIndexInLine < currentLine.notes.size() - 1) {
                 noteIndexInLine++;
-                System.out.println("Advanced to note index " + noteIndexInLine + " in line " + currentLineIndex + " (elapsed: " + elapsedTime + "ms)");
             } else {
                 noteIndexInLine = 0;
                 currentLineIndex++;
@@ -302,23 +339,10 @@ public class GameController implements Initializable {
             currentNote.processed = true;
             currentNote.isHit = false; 
             scoreManager.registerMiss();
-            triggerMissFeedback(); // Trigger visual red flash for an expired note!
-            System.out.println("Note EXPIRED and missed: " + currentNote.noteName + " (elapsed: " + elapsedMS + "ms, target: " + currentNote.targetTimeMs + "ms)");
+            triggerMissFeedback(); 
         }
     }
 
-    public void updateUI(int score, int combo, String rating) {
-        //printing to console for now since this is for UI
-        System.out.println("UI Update -> Score: " + score + " | Combo: " + combo + " | Rating: " + rating);
-    }
-
-    private void applyParallax(long elapsedMs) {
-        // Optional: Implement parallax effect on sheet music based on elapsed time
-        // This is a placeholder for where you would add code to adjust the position of the sheet music
-        // to create a parallax scrolling effect as the song progresses.
-    }
-
-    // handles keyboard press events
     @FXML
     public void onKeyPressed(KeyEvent event) {
         inputHandler.handleKeyPressed(event);
@@ -330,16 +354,9 @@ public class GameController implements Initializable {
      * STOPS all background threads. 
      */
     private void cleanup() {
-        System.out.println("Cleaning up game threads...");
-        if (animationTimer != null) {
-            animationTimer.stop();
-        }
-        if (audioService != null) {
-            audioService.stopSong();
-        }
-        if (masterClock != null) {
-            masterClock.stop();
-        }
+        if (animationTimer != null) animationTimer.stop();
+        if (audioService != null) audioService.stopSong();
+        if (masterClock != null) masterClock.stop();
     }
 
     @FXML

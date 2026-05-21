@@ -11,54 +11,41 @@ public class InputHandler {
         this.gameController = gameController;
     }
 
-    // to fill out in phase 3
     public void handleKeyPressed(KeyEvent event) {
         String keyPressed = event.getText().toUpperCase();
         System.out.println("Key pressed: '" + keyPressed + "' (code: " + event.getCode() + ")");
        
-        long currentTime = (long) gameController.getAudioService().getCurrentTimeMs(); // Get current time from audio service for timing error calculations
+        long currentTime = (long) gameController.getAudioService().getCurrentTimeMs(); 
         NoteData currentNote = gameController.getCurrentNote();
        
         System.out.println("Current note: " + (currentNote != null ? currentNote.noteName : "null") + ", processed: " + (currentNote != null ? currentNote.processed : "N/A"));
         System.out.println("DEBUG: Key Pressed: " + keyPressed + " | Target Note: " + currentNote.noteName + " (elapsed: " + currentTime + "ms, target: " + currentNote.targetTimeMs + "ms)");
     
-
         // 1. Anti-Cheat: Only allow hit if note exists and isn't processed
-        //UPDATE: added check to register stray hits that don't correspond to any note (currentNote == null) 
         if (currentNote == null || currentNote.processed) {
             gameController.getScoreManager().registerStray(); 
-            gameController.triggerMissFeedback(); // triggers red glow for feedback
+            gameController.triggerMissFeedback(); // Flashes Red for button mashing!
             return;
         }
 
-
         // 2. Key Validation: Check if the key matches the note name
-        if (currentNote.noteName.equalsIgnoreCase(keyPressed) ) {
-        
-            // 3. Calculate timing error (Time they pressed - Time they should have pressed)
+        if (currentNote.noteName.equalsIgnoreCase(keyPressed)) {
+            // 3. Calculate timing error
             long timingError = currentTime - currentNote.targetTimeMs;
-
 
             // 4. Register the hit
             currentNote.processed = true;
             currentNote.isHit = true;
             gameController.getScoreManager().registerHit(timingError);
-            
-            gameController.triggerHitFeedback(); // triggers blue flash for correct hit
-            
+            gameController.triggerHitFeedback(); // Flashes Blue for success!
             System.out.println("HIT registered for note: " + currentNote.noteName);
-        } 
-        
-        else {
+        } else {
             // If the key doesn't match, it's a miss
             currentNote.processed = true;
             currentNote.isHit = false;
             gameController.getScoreManager().registerMiss();
-            
-            gameController.triggerMissFeedback(); // triggers red flash for wrong key
-            
+            gameController.triggerMissFeedback(); // Flashes Red for mistake!
             System.out.println("MISS registered for note: " + currentNote.noteName + " (pressed: " + keyPressed + ")");
         }
-
     }
 }
