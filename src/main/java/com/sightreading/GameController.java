@@ -3,6 +3,7 @@ package com.sightreading;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import javafx.animation.AnimationTimer;
@@ -19,6 +20,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -26,11 +29,6 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-
-// Imports for the dynamic video background
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 
 public class GameController implements Initializable {
 
@@ -47,9 +45,12 @@ public class GameController implements Initializable {
     @FXML private StackPane resultsOverlay;
     @FXML private Label finalScoreLabel;
     
-    // video Background Elements
-    @FXML private MediaView bgMediaView;
-    private MediaPlayer bgMediaPlayer;
+    // Static Background Image & Particles
+    @FXML private ImageView bgImageView;
+    @FXML private Pane particlePane;
+    private List<Particle> particles = new ArrayList<>();
+    private AnimationTimer particleTimer;
+    private Random random = new Random();
 
     // gradient objects for the cinematic vignette glow
     private RadialGradient hitGradient;
@@ -117,26 +118,23 @@ public class GameController implements Initializable {
     
         audioService = new AudioService(songPathString, this);
 
-        // VIDEO BG
+        // image bg
         try {
             // loads song bg depending on selected song
-            String bgFileName = songId + "_bg.mp4"; 
-            URL videoUrl = getClass().getResource("/com/sightreading/images/" + bgFileName);
+            String bgFileName = songId + "_bg.jpg"; 
+            URL imageUrl = getClass().getResource("/com/sightreading/images/" + bgFileName);
             
-            if (videoUrl != null) {
-                Media media = new Media(videoUrl.toExternalForm());
-                bgMediaPlayer = new MediaPlayer(media);
-                bgMediaView.setMediaPlayer(bgMediaPlayer);
-                
-                // Loop the video continuously
-                bgMediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                bgMediaPlayer.play();
+            if (imageUrl != null) {
+                bgImageView.setImage(new Image(imageUrl.toExternalForm()));
             } else {
-                System.err.println("WARNING: Video background not found: " + bgFileName);
+                System.err.println("WARNING: Image background not found: " + bgFileName);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        // particles
+        createParticles();
 
         songData = NoteLoader.load(songFolder);
 
@@ -179,6 +177,64 @@ public class GameController implements Initializable {
             sheetMusicView.setFocusTraversable(true); 
             sheetMusicView.requestFocus();           
         });
+    }
+
+    // FLOATING PARTICLES
+    private void createParticles() {
+        for (int i = 0; i < 60; i++) {
+            double radius = random.nextDouble() * 2 + 1;
+            Circle circle = new Circle(radius, Color.web("#ffffff")); 
+            circle.setEffect(new DropShadow(10, Color.web("#ffffff")));
+            
+            circle.setLayoutX(random.nextDouble() * 1200);
+            circle.setLayoutY(random.nextDouble() * 900);
+            
+            double vx = (random.nextDouble() - 0.5) * 0.5; 
+            double vy = (random.nextDouble() - 0.5) * 0.5;
+
+            Particle particle = new Particle(circle, vx, vy);
+            particles.add(particle);
+            particlePane.getChildren().add(circle);
+        }
+
+        particleTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                for (Particle p : particles) {
+                    p.update();
+                }
+            }
+        };
+        particleTimer.start();
+    }
+
+    private class Particle {
+        Circle node;
+        double vx, vy;
+        double life;
+        double twinkleSpeed;
+
+        Particle(Circle node, double vx, double vy) {
+            this.node = node;
+            this.vx = vx;
+            this.vy = vy;
+            this.life = random.nextDouble() * Math.PI * 2; 
+            this.twinkleSpeed = 0.02 + random.nextDouble() * 0.03; 
+        }
+
+        void update() {
+            node.setLayoutX(node.getLayoutX() + vx);
+            node.setLayoutY(node.getLayoutY() + vy);
+
+            if (node.getLayoutX() < 0) node.setLayoutX(1200);
+            if (node.getLayoutX() > 1200) node.setLayoutX(0);
+            if (node.getLayoutY() < 0) node.setLayoutY(900);
+            if (node.getLayoutY() > 900) node.setLayoutY(0);
+
+            life += twinkleSpeed;
+            double opacity = Math.abs(Math.sin(life)) * 0.7 + 0.1; 
+            node.setOpacity(opacity);
+        }
     }
 
     private void preloadAllImages() {
@@ -398,7 +454,7 @@ public class GameController implements Initializable {
         if (animationTimer != null) animationTimer.stop();
         if (audioService != null) audioService.stopSong();
         if (masterClock != null) masterClock.stop();
-        if (bgMediaPlayer != null) bgMediaPlayer.stop();
+        if (particleTimer != null) particleTimer.stop();
     }
 
     @FXML

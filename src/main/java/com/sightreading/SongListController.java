@@ -1,22 +1,31 @@
 package com.sightreading;
 
+import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javax.sound.sampled.AudioSystem;
@@ -28,11 +37,19 @@ public class SongListController {
     @FXML private HBox carouselBox;
     @FXML private ScrollPane carouselScrollPane;
     @FXML private Button backButton;  // return to home
+    
+    @FXML private Pane particlePane;
+    private List<Particle> particles = new ArrayList<>();
+    private AnimationTimer particleTimer;
+    private Random random = new Random();
 
     private Clip hoverSound; // so that native audio file will be used
 
     @FXML
     public void initialize() {
+        // floating particles
+        createParticles();
+
         try {
             URL soundUrl = getClass().getResource("/com/sightreading/audio/tick.wav");  // folder location
             if (soundUrl != null) {
@@ -99,6 +116,69 @@ public class SongListController {
                 carouselBox.getChildren().get(0).requestFocus();
             }
         });
+    }
+
+    // PARTICLES
+    private void createParticles() {
+        for (int i = 0; i < 60; i++) {
+            double radius = random.nextDouble() * 2 + 1;
+            Circle circle = new Circle(radius, Color.web("#ffd700")); // Gold
+            circle.setEffect(new DropShadow(10, Color.web("#ffd700")));
+            
+            circle.setLayoutX(random.nextDouble() * 1200);
+            circle.setLayoutY(random.nextDouble() * 900);
+            
+            double vx = (random.nextDouble() - 0.5) * 0.5; 
+            double vy = (random.nextDouble() - 0.5) * 0.5;
+
+            Particle particle = new Particle(circle, vx, vy);
+            particles.add(particle);
+            particlePane.getChildren().add(circle);
+        }
+
+        particleTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                for (Particle p : particles) {
+                    p.update();
+                }
+            }
+        };
+        particleTimer.start();
+    }
+
+    private class Particle {
+        Circle node;
+        double vx, vy;
+        double life;
+        double twinkleSpeed;
+
+        Particle(Circle node, double vx, double vy) {
+            this.node = node;
+            this.vx = vx;
+            this.vy = vy;
+            this.life = random.nextDouble() * Math.PI * 2; 
+            this.twinkleSpeed = 0.02 + random.nextDouble() * 0.03; 
+        }
+
+        void update() {
+            node.setLayoutX(node.getLayoutX() + vx);
+            node.setLayoutY(node.getLayoutY() + vy);
+
+            if (node.getLayoutX() < 0) node.setLayoutX(1200);
+            if (node.getLayoutX() > 1200) node.setLayoutX(0);
+            if (node.getLayoutY() < 0) node.setLayoutY(900);
+            if (node.getLayoutY() > 900) node.setLayoutY(0);
+
+            life += twinkleSpeed;
+            double opacity = Math.abs(Math.sin(life)) * 0.7 + 0.1; 
+            node.setOpacity(opacity);
+        }
+    }
+
+    private void cleanup() {
+        if (particleTimer != null) particleTimer.stop();
+        if (hoverSound != null && hoverSound.isOpen()) hoverSound.close();
     }
 
     // vertical box for each song card
@@ -183,6 +263,7 @@ public class SongListController {
     private void startGame(String songId) {
         System.out.println("Starting song: " + songId);
         Main.selectedSongId = songId;       // song will change based on song ID
+        cleanup(); // stop particles
         try {
             Main.setRoot("game");
         } catch (IOException e) {
@@ -192,6 +273,7 @@ public class SongListController {
 
     @FXML
     private void handleBack(ActionEvent event) {
+        cleanup(); // stop particles
         try {
             Main.setRoot("home");
         } catch (IOException e) {
