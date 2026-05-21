@@ -47,13 +47,18 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
                      </image>
                   </ImageView>
                   
-                  <Label fx:id="finalScoreLabel" alignment="CENTER" layoutY="220.0" prefWidth="450.0" text="0" textFill="#ffd700" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 90px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(255,215,0,0.5), 15, 0, 0, 0);" />
+                  <Label fx:id="finalScoreLabel" alignment="CENTER" layoutY="180.0" prefWidth="450.0" text="0" textFill="#ffd700" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 90px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(255,215,0,0.5), 15, 0, 0, 0);" />
                   
-                  <VBox alignment="CENTER" layoutY="380.0" prefWidth="450.0" spacing="15.0">
+                  <VBox alignment="CENTER" layoutY="340.0" prefWidth="450.0" spacing="20.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#handleRestart" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_retry.png'); -fx-background-size: contain; -fx-background-position: center; -background-repeat: no-repeat; -fx-cursor: hand;" />
-                        <Button mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_songs.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
-                        <Button mnemonicParsing="false" onAction="#handleGoToLeaderboard" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_leaderboard.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                        <Button mnemonicParsing="false" onAction="#handleRestart" text="" prefHeight="80.0" prefWidth="80.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_retry.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                        
+                        <VBox alignment="CENTER" spacing="5.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_songs.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                              <Button mnemonicParsing="false" onAction="#handleGoToLeaderboard" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_leaderboard.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                           </children>
+                        </VBox>
                      </children>
                   </VBox>
 
