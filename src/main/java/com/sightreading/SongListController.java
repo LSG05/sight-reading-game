@@ -107,62 +107,23 @@ public class SongListController {
         StackPane cardRoot = new StackPane();
         cardRoot.setPrefSize(300, 420);
         cardRoot.setFocusTraversable(true);
+        cardRoot.setStyle("-fx-background-color: transparent;");
 
-        ImageView frameView = new ImageView();
-        try {
-            frameView.setImage(new Image(getClass().getResourceAsStream("/com/sightreading/images/card_frame.png")));
-            frameView.setFitWidth(300);
-            frameView.setFitHeight(420);
-        } catch (Exception e) {
-            System.err.println("Could not load Canva card frame. Check the file path.");
-        }
-
-        // REMINDER: will change this!!  -----------------------------------------------------
-        VBox contentBox = new VBox();
-        contentBox.setPrefSize(300, 420);
-        contentBox.setAlignment(Pos.TOP_CENTER);
-        contentBox.setPadding(new javafx.geometry.Insets(75, 0, 0, 0)); 
-        contentBox.setSpacing(45); 
-
-        ImageView coverView = new ImageView();
-        coverView.setFitWidth(150);
-        coverView.setFitHeight(150);
-        coverView.setPreserveRatio(true);
+        ImageView fullCardView = new ImageView();
+        fullCardView.setFitWidth(300);
+        fullCardView.setFitHeight(420);
+        fullCardView.setPreserveRatio(true);
         
-        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(150, 150);
-        clip.setArcWidth(12);
-        clip.setArcHeight(12);
-        coverView.setClip(clip);
-
         if (imagePath != null) {
             try {
-                coverView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
+                fullCardView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
             } catch (Exception e) {
-                System.err.println("Could not load image: " + imagePath);
+                System.err.println("Could not load baked Canva card: " + imagePath);
             }
         }
 
-        // REMINDER: will change this!!  -----------------------------------------------------
-        VBox textBox = new VBox();
-        textBox.setAlignment(Pos.CENTER);
-        textBox.setSpacing(5);
+        cardRoot.getChildren().add(fullCardView);
 
-        // labels
-        Label titleLabel = new Label(title.toUpperCase());
-        // Changed from white to dark brown so it pops against the gold Canva plate
-        titleLabel.setStyle("-fx-text-fill: #3A2303; -fx-font-size: 17px; -fx-font-weight: 900; -fx-letter-spacing: 1px;");
-        
-        Label subLabel = new Label(subtitle);
-        // REMINDER: will change this!!  -----------------------------------------------------
-        subLabel.setStyle("-fx-text-fill: #0044aa; -fx-font-size: 14px; -fx-font-weight: bold;");
-
-        textBox.getChildren().addAll(titleLabel, subLabel);
-        contentBox.getChildren().addAll(coverView, textBox);
-
-        // REMINDER: will change this!!  -----------------------------------------------------
-        cardRoot.getChildren().addAll(frameView, contentBox);
-
-        // mouse hover 
         cardRoot.setOnMouseEntered(e -> {
             cardRoot.setScaleX(1.04);
             cardRoot.setScaleY(1.04);
