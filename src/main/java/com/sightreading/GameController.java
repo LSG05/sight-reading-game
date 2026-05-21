@@ -312,12 +312,12 @@ public class GameController implements Initializable {
         if (next.pixelX < prev.pixelX) {
             double fakeNextX = 850; 
             double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-            return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 50;
+            return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 15;
         }
 
         // 4. Standard Interpolation
         double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 50;
+        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 15;
     }
 
     //new update line index method
