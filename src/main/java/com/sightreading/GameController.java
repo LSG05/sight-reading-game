@@ -65,15 +65,20 @@ public class GameController implements Initializable {
 
             applyParallax(elapsedMs);
             
+            // logic here migrated to handleSongFinished();
+            /* 
             //UPDATE: closing methods block moved here to ensure it is checked every frame, not just at the start of the song
-            if(currentLineIndex >= songData.lines.size() - 1 && noteIndexInLine >= songData.lines.get(songData.lines.size() - 1).notes.size() - 1 &&
-            songData.lines.get(currentLineIndex).notes.get(noteIndexInLine).processed){
+            int lastLineIndex = songData.lines.size() - 1;
+            int lastNoteIndex = songData.lines.get(lastLineIndex).notes.size() - 1;
+            if(currentLineIndex >= lastLineIndex && noteIndexInLine >= lastNoteIndex &&
+            songData.lines.get(lastLineIndex).notes.get(lastNoteIndex).processed){
                 audioService.stopSong();
                 masterClock.stop();
                 this.stop();
                 animationTimer.stop();
                 resetSongStates(); // reset all note states for potential replay
             }
+            */
         }
     };
 
@@ -85,7 +90,7 @@ public class GameController implements Initializable {
         songFolder = "songs/" + songId;
         String songPathString = "/com/sightreading/songs/" + songId + "/audio.wav";
     
-        audioService = new AudioService(songPathString);
+        audioService = new AudioService(songPathString, this);
 
         // 1. Parse notes.json for the selected song
         songData = NoteLoader.load(songFolder);
@@ -378,6 +383,16 @@ public class GameController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // handle song finished
+    public void handleSongFinished(){
+        // Stop all timers/clocks
+        audioService.stopSong();
+        masterClock.stop();
+        animationTimer.stop();
+    
+        // TODO LATER: show results of screen and add to leaderboard
     }
 
     // Add these to GameController.java so InputHandler can see them

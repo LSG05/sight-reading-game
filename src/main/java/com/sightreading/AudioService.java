@@ -1,6 +1,7 @@
 package com.sightreading;
 import java.net.URL;
 
+import javafx.application.Platform;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -8,8 +9,10 @@ import javafx.scene.media.MediaPlayer.Status;
 public class AudioService {
     private MediaPlayer songPlayer;
     private String songPathString;
-    public AudioService(String urlAudioString){
+    private GameController gameController;
+    public AudioService(String urlAudioString, GameController gameController){
         this.songPathString = urlAudioString;
+        this.gameController = gameController;
     }
     public void loadSong(){
         try {
@@ -17,6 +20,17 @@ public class AudioService {
             if (musicUrl != null) {
                 Media media = new Media(musicUrl.toExternalForm());
                 songPlayer = new MediaPlayer(media);
+
+                // attach listener for when song ends
+                songPlayer.setOnEndOfMedia(() -> {
+                    System.out.println("Audio Thread: Song has physically finished.");
+                    // Use Platform.runLater because the MediaPlayer thread is NOT the UI thread
+                    Platform.runLater(() -> {
+                        // trigger end of song actions in the GameController
+                        gameController.handleSongFinished();
+                    });
+                });
+
             } else {
                 System.err.println("Error: Music file not found at " + this.songPathString);
             }
@@ -38,7 +52,7 @@ public class AudioService {
                 } catch (Exception e) {
                 }
         } 
-    }
+        }
         dispose();
     }
     public boolean isPlaying(){
@@ -64,4 +78,5 @@ public class AudioService {
         } 
         return 0.0;
     }
+
 }
