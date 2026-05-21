@@ -32,7 +32,28 @@ public class LeaderboardManager {
 
     public static void addScore(String playerName, int score) {
         List<LeaderboardEntry> scores = getScores();
-        scores.add(new LeaderboardEntry(playerName, score));
+        
+        boolean playerExists = false;
+
+        // loop through entries to see if this player already has a score saved
+        for (LeaderboardEntry entry : scores) {
+            // Ignore case (ex: "myles" == "Myles" == "MYLES")
+            if (entry.playerName.equalsIgnoreCase(playerName)) {
+                playerExists = true;
+                
+                // only overwrite score if the new score is HIGHER
+                if (score > entry.score) {
+                    entry.score = score;
+                    entry.playerName = playerName; 
+                }
+                break; 
+            }
+        }
+        
+        // if not on the list, add user as new entry
+        if (!playerExists) {
+            scores.add(new LeaderboardEntry(playerName, score));
+        }
         
         try (Writer writer = new FileWriter(FILE_PATH)) {
             gson.toJson(scores, writer);

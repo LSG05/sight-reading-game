@@ -79,6 +79,19 @@ public class GameController implements Initializable {
             double computedX = computeHitBox(elapsedMs);
             setHitBoxX(computedX);
             updateLineDisplay();
+
+            // end of song
+            int lastLine = songData.lines.size() - 1;
+            int lastNote = songData.lines.get(lastLine).notes.size() - 1;
+            NoteData veryLastNote = songData.lines.get(lastLine).notes.get(lastNote);
+            
+            // final note
+            if (currentLineIndex == lastLine && noteIndexInLine == lastNote && veryLastNote.processed) {
+                // adds a 1.5-second buffer after the final note so the game doesn't instantly cut off
+                if (elapsedMs > veryLastNote.targetTimeMs + 1500) {
+                    handleSongFinished();
+                }
+            }
         }
     };
 
@@ -387,7 +400,23 @@ public class GameController implements Initializable {
         masterClock.stop();
         animationTimer.stop();
     
-        // TODO LATER: show results of screen and add to leaderboard
+        // get the final score from the ScoreManager
+        int finalScore = scoreManager.getScore();
+        System.out.println("SONG FINISHED! Final Score: " + finalScore);
+
+        // save to LeaderboardManager
+        // uses the playerName from Main, or defaults to "guest" if it hasn't been set
+        String pName = (Main.playerName != null && !Main.playerName.isEmpty()) ? Main.playerName : "Guest";
+        LeaderboardManager.addScore(pName, finalScore);
+        
+        // switch to the leaderboard scene automatically
+        Platform.runLater(() -> {
+            try {
+                Main.setRoot("leaderboard");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     // Add these to GameController.java so InputHandler can see them

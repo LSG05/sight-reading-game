@@ -73,4 +73,9 @@ public class ScoreManager {
             gameController.updateUI(this.score, this.combo, "STRAY");
         });
     }
+    
+    // added so the GameController can retrieve the final score at the end of the song
+    public int getScore() {
+        return this.score;
+    }
 }
