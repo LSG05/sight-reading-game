@@ -3,12 +3,12 @@
     "id": "twinkle",
     "title": "Twinkle Twinkle",
     "bpm": "80 BPM",
-    "imagePath": "/com/sightreading/songs/twinkle/cover.jpg"
+    "imagePath": "/com/sightreading/images/twinkle_card.png"  
   },
   {
     "id": "pirates",
     "title": "Pirates of the Caribbean",
     "bpm": "100 BPM",
-    "imagePath": "/com/sightreading/songs/pirates/cover.jpg"
+    "imagePath": "/com/sightreading/images/pirates_card.png"
   }
 ]

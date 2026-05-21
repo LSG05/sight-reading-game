@@ -122,7 +122,7 @@ public class SongListController {
         contentBox.setPrefSize(300, 420);
         contentBox.setAlignment(Pos.TOP_CENTER);
         contentBox.setPadding(new javafx.geometry.Insets(75, 0, 0, 0)); 
-        contentBox.setSpacing(45); // Space between the album art and the text block
+        contentBox.setSpacing(45); 
 
         ImageView coverView = new ImageView();
         coverView.setFitWidth(150);
