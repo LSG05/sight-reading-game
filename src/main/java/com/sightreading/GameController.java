@@ -27,6 +27,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+// Imports for the dynamic video background
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+
 public class GameController implements Initializable {
 
     @FXML private AnchorPane rootPane; // Used to spawn floating text
@@ -41,6 +46,10 @@ public class GameController implements Initializable {
     // End Game Overlay Elements
     @FXML private StackPane resultsOverlay;
     @FXML private Label finalScoreLabel;
+    
+    // video Background Elements
+    @FXML private MediaView bgMediaView;
+    private MediaPlayer bgMediaPlayer;
 
     // gradient objects for the cinematic vignette glow
     private RadialGradient hitGradient;
@@ -107,6 +116,27 @@ public class GameController implements Initializable {
         String songPathString = "/com/sightreading/songs/" + songId + "/audio.wav";
     
         audioService = new AudioService(songPathString, this);
+
+        // VIDEO BG
+        try {
+            // loads song bg depending on selected song
+            String bgFileName = songId + "_bg.mp4"; 
+            URL videoUrl = getClass().getResource("/com/sightreading/images/" + bgFileName);
+            
+            if (videoUrl != null) {
+                Media media = new Media(videoUrl.toExternalForm());
+                bgMediaPlayer = new MediaPlayer(media);
+                bgMediaView.setMediaPlayer(bgMediaPlayer);
+                
+                // Loop the video continuously
+                bgMediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                bgMediaPlayer.play();
+            } else {
+                System.err.println("WARNING: Video background not found: " + bgFileName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         songData = NoteLoader.load(songFolder);
 
@@ -368,6 +398,7 @@ public class GameController implements Initializable {
         if (animationTimer != null) animationTimer.stop();
         if (audioService != null) audioService.stopSong();
         if (masterClock != null) masterClock.stop();
+        if (bgMediaPlayer != null) bgMediaPlayer.stop();
     }
 
     @FXML
