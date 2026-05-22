@@ -45,6 +45,7 @@ public class SongListController {
     private Random random = new Random();
 
     private AudioClip hoverSound;
+    private AudioService previewService; // for song preview on hover
     // outdated: private Clip hoverSound; // so that native audio file will be used
 
     @FXML
@@ -197,6 +198,9 @@ public class SongListController {
     private void cleanup() {
         if (particleTimer != null) particleTimer.stop();
         if (hoverSound != null) hoverSound.stop();
+        if (previewService != null) {
+                previewService.stopSong();
+        }
     }
 
     // vertical box for each song card
@@ -224,6 +228,18 @@ public class SongListController {
 
         cardRoot.setOnMouseEntered(e -> {
             playHoverSound(); // add hover sound effect
+
+            // hover preview music
+            if (previewService != null) {
+                previewService.stopSong();
+            }
+
+            String previewPath = "/com/sightreading/songs/" + songId + "/audio.wav";
+                // We pass 'null' for GameController because we don't want game logic in the menu
+                previewService = new AudioService(previewPath, null); 
+                previewService.loadSong();
+                previewService.playPreview(5.0); // Play for 5 seconds
+
             cardRoot.setScaleX(1.04);
             cardRoot.setScaleY(1.04);
             cardRoot.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.7), 25, 0, 0, 0);");
@@ -234,6 +250,11 @@ public class SongListController {
             cardRoot.setScaleX(1.0);
             cardRoot.setScaleY(1.0);
             cardRoot.setStyle("");
+
+            // song preview cleanup
+            if (previewService != null) {
+                previewService.stopSong();
+            }
         });
 
         cardRoot.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {

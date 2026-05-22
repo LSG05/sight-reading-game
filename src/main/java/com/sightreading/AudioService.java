@@ -79,4 +79,27 @@ public class AudioService {
         return 0.0;
     }
 
+    // Add for hover
+    public void playPreview(double seconds) {
+    if (songPlayer != null) {
+        songPlayer.setOnReady(() -> {
+            // Avoid game logic triggers by clearing listener
+            songPlayer.setOnEndOfMedia(null); 
+            
+            // Set preview song duration
+            songPlayer.seek(javafx.util.Duration.seconds(3)); 
+            songPlayer.setStopTime(javafx.util.Duration.seconds(3 + seconds));
+            
+            // Debug print
+            songPlayer.setOnStopped(() -> System.out.println("Preview finished"));
+
+            // Play Audio
+            songPlayer.play();
+        });
+        
+        // Error handling: If it fails to reach "Ready"
+        songPlayer.setOnError(() -> System.err.println("Media error: " + songPlayer.getError()));
+    }
+}
+
 }
