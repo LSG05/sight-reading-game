@@ -16,9 +16,9 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
          <children>
             
             <ScrollPane fx:id="carouselScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;"
-maxWidth="1000.0" prefHeight="500.0">
+maxWidth="1000.0" prefHeight="580.0">
                <content>
-                  <HBox fx:id="carouselBox" alignment="CENTER_LEFT" spacing="30.0" style="-fx-padding: 20px 350px 20px 350px;">
+                  <HBox fx:id="carouselBox" alignment="CENTER_LEFT" spacing="30.0" style="-fx-padding: 50px 350px 50px 350px;">
                      </HBox>
                </content>
             </ScrollPane>
