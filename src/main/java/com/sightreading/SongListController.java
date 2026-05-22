@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -43,13 +44,28 @@ public class SongListController {
     private AnimationTimer particleTimer;
     private Random random = new Random();
 
-    private Clip hoverSound; // so that native audio file will be used
+    private AudioClip hoverSound;
+    // outdated: private Clip hoverSound; // so that native audio file will be used
 
     @FXML
     public void initialize() {
         // floating particles
         createParticles();
 
+        try {
+            URL soundUrl = getClass().getResource("/com/sightreading/audio/click.mp3");
+            if (soundUrl != null) {
+                String source = soundUrl.toExternalForm();
+                System.out.println("Loading audio from: " + source); // Check your console for this!
+                hoverSound = new AudioClip(source);
+            } else {
+                System.err.println("CRITICAL: click.mp3 not found in resources!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /* outdated hover sound effect
         try {
             URL soundUrl = getClass().getResource("/com/sightreading/audio/tick.wav");  // folder location
             if (soundUrl != null) {
@@ -60,6 +76,7 @@ public class SongListController {
         } catch (Exception e) {
             System.err.println("Native audio engine failed to open asset. Skipping hover audio.");
         }
+            */
 
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(getClass().getResourceAsStream("/com/sightreading/catalog.json")))) {
@@ -94,6 +111,7 @@ public class SongListController {
         
             // visual effects
             backButton.setOnMouseEntered(e -> {
+                playHoverSound(); // call helper for sfx
                 btnView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.6), 12, 0, 0, 0);");
                 btnView.setTranslateY(-2); 
             });
@@ -178,7 +196,7 @@ public class SongListController {
 
     private void cleanup() {
         if (particleTimer != null) particleTimer.stop();
-        if (hoverSound != null && hoverSound.isOpen()) hoverSound.close();
+        if (hoverSound != null) hoverSound.stop();
     }
 
     // vertical box for each song card
@@ -205,6 +223,7 @@ public class SongListController {
         cardRoot.getChildren().add(fullCardView);
 
         cardRoot.setOnMouseEntered(e -> {
+            playHoverSound(); // add hover sound effect
             cardRoot.setScaleX(1.04);
             cardRoot.setScaleY(1.04);
             cardRoot.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(68,136,255,0.7), 25, 0, 0, 0);");
@@ -286,5 +305,12 @@ public class SongListController {
         String title;
         String bpm;
         String imagePath;
+    }
+
+    // for hover sound
+    private void playHoverSound() {
+        if (hoverSound != null) {
+            hoverSound.play(); 
+        }
     }
 }
