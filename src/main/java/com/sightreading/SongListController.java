@@ -104,7 +104,6 @@ public class SongListController {
 
         addSongCard("Rainbow", "", "/com/sightreading/images/rainbow.png", "rainbow", true);
         addSongCard("Canon", "", "/com/sightreading/images/canon.png", "canon", true);
-        addSongCard("Locked 3", "", "/com/sightreading/images/locked_card.png", "locked3", true);
 
         try {
             // BUTTON

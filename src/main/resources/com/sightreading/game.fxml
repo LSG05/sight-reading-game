@@ -6,6 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.layout.Pane?>
@@ -18,7 +19,8 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
       
       <Pane fx:id="particlePane" prefHeight="900.0" prefWidth="1200.0" mouseTransparent="true" />
 
-      <Button fx:id="backButton" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="100.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/back_arrow.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+      <Button fx:id="backButton" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="100.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/back_arrow.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;"
+/>
 
       <AnchorPane fx:id="sheetMusicPane" layoutX="200.0" layoutY="300.0" prefHeight="75.0" prefWidth="800.0">
          <children>
@@ -29,40 +31,64 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
      
       <Rectangle fx:id="flashOverlay" width="1200.0" height="900.0" mouseTransparent="true" opacity="0.0" />
 
-      <VBox alignment="TOP_RIGHT" prefWidth="300.0" spacing="5.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0" mouseTransparent="true">
+     
+  <VBox alignment="TOP_RIGHT" prefWidth="300.0" spacing="5.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0" mouseTransparent="true">
          <children>
-            <Label fx:id="scoreLabel" text="Score: 0" textFill="#ffd700" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 32px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 2, 2);" />
-            <Label fx:id="comboLabel" text="Combo: 0" textFill="#ffcc00" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 20px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 2, 2);" />
+            <Label fx:id="scoreLabel" text="Score: 0" textFill="#ffd700" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 32px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 2, 2);"
+/>
+            <Label fx:id="comboLabel" text="Combo: 0" textFill="#ffcc00" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 20px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 2, 2);"
+/>
          </children>
       </VBox>
 
-      <StackPane fx:id="resultsOverlay" prefHeight="900.0" prefWidth="1200.0" style="-fx-background-color: rgba(0, 0, 0, 0.8);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER" layoutY="720.0" prefWidth="1200.0" spacing="25.0" mouseTransparent="true">
+         <children>
+            <ImageView fx:id="btnC" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/C.png" /></image></ImageView>
+            <ImageView fx:id="btnD" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/D.png" /></image></ImageView>
+            <ImageView fx:id="btnE" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/E.png" /></image></ImageView>
+            <ImageView fx:id="btnF" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/F.png" /></image></ImageView>
+            <ImageView fx:id="btnG" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/G.png" /></image></ImageView>
+            <ImageView fx:id="btnA" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/A.png" /></image></ImageView>
+            <ImageView fx:id="btnB" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/B.png" /></image></ImageView>
+         </children>
+      </HBox>
+
+      <StackPane fx:id="resultsOverlay" prefHeight="900.0" prefWidth="1200.0" style="-fx-background-color: rgba(0, 0, 0, 0.8);"
+visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             
             <AnchorPane maxHeight="650.0" maxWidth="450.0" prefHeight="650.0" prefWidth="450.0">
                <children>
                   <ImageView fitHeight="650.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <image>
+                    
+ <image>
                         <Image url="@images/results_frame.png" />
                      </image>
                   </ImageView>
                   
-                  <Label fx:id="finalScoreLabel" alignment="CENTER" layoutY="180.0" prefWidth="450.0" text="0" textFill="#ffd700" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 90px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(255,215,0,0.5), 15, 0, 0, 0);" />
+                
+  <Label fx:id="finalScoreLabel" alignment="CENTER" layoutY="180.0" prefWidth="450.0" text="0" textFill="#ffd700" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 90px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(255,215,0,0.5), 15, 0, 0, 0);"
+/>
                   
                   <VBox alignment="CENTER" layoutY="340.0" prefWidth="450.0" spacing="20.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#handleRestart" text="" prefHeight="80.0" prefWidth="80.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_retry.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                        <Button mnemonicParsing="false" onAction="#handleRestart" text="" prefHeight="80.0" prefWidth="80.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_retry.png'); -fx-background-size: contain; -fx-background-position: center; 
+-fx-background-repeat: no-repeat; -fx-cursor: hand;" />
                         
                         <VBox alignment="CENTER" spacing="5.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_songs.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
-                              <Button mnemonicParsing="false" onAction="#handleGoToLeaderboard" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_leaderboard.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                   
+           <Button mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_songs.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;"
+/>
+                              <Button mnemonicParsing="false" onAction="#handleGoToLeaderboard" text="" prefHeight="60.0" prefWidth="250.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/btn_leaderboard.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;"
+/>
                            </children>
                         </VBox>
                      </children>
                   </VBox>
 
-               </children>
+          
+      </children>
             </AnchorPane>
             
          </children>

@@ -10,6 +10,7 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,6 +52,9 @@ public class GameController implements Initializable {
     private List<Particle> particles = new ArrayList<>();
     private AnimationTimer particleTimer;
     private Random random = new Random();
+
+    // Interactive Keyboard Elements
+    @FXML private ImageView btnC, btnD, btnE, btnF, btnG, btnA, btnB;
 
     // gradient objects for the cinematic vignette glow
     private RadialGradient hitGradient;
@@ -439,9 +443,41 @@ public class GameController implements Initializable {
         }
     }
 
+    // KEYBOARD LETTER BUTTONS
+    private void triggerKeyGlow(ImageView keyView, Color glowColor) {
+        if (keyView == null) return;
+        
+        DropShadow glow = new DropShadow(30, glowColor);
+        glow.setSpread(0.6);
+        keyView.setEffect(glow);
+        keyView.setTranslateY(5); // Simulate a physical button getting pushed down
+
+        // turn the glow off quickly like a real piano key
+        PauseTransition pause = new PauseTransition(Duration.millis(150));
+        pause.setOnFinished(e -> {
+            keyView.setEffect(null);
+            keyView.setTranslateY(0);
+        });
+        pause.play();
+    }
+
     @FXML
     public void onKeyPressed(KeyEvent event) {
         if (resultsOverlay.isVisible()) return;
+
+        // visual feedback for the letter buttons
+        switch (event.getCode()) {
+            case C: triggerKeyGlow(btnC, Color.web("#e883ab")); break; // Pink
+            case D: triggerKeyGlow(btnD, Color.web("#3866b3")); break; // Blue
+            case E: triggerKeyGlow(btnE, Color.web("#8e46b3")); break; // Purple
+            case F: triggerKeyGlow(btnF, Color.web("#5db069")); break; // Green
+            case G: triggerKeyGlow(btnG, Color.web("#f4d610")); break; // Yellow
+            case A: triggerKeyGlow(btnA, Color.web("#bf291e")); break; // Red
+            case B: triggerKeyGlow(btnB, Color.web("#eb8731")); break; // Orange
+            default: break; 
+        }
+
+        // pass the input to existing game logic
         inputHandler.handleKeyPressed(event);
     }
  
