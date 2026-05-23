@@ -5,6 +5,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
@@ -45,9 +46,27 @@
                <children>
                   <Button fx:id="playButton" mnemonicParsing="false" onAction="#handlePlay" prefHeight="200.0" prefWidth="500.0" styleClass="custom-canva-button" />
                   <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="76.0" prefWidth="325.0" styleClass="custom-canva-button" />
+                  <Button fx:id="howToPlayButton" mnemonicParsing="false" onAction="#handleHowToPlay" prefHeight="76.0" prefWidth="325.0" styleClass="custom-canva-button" />
                </children>
             </VBox>
 
+         </children>
+      </VBox>
+
+      <VBox fx:id="howToPlayOverlay" alignment="CENTER" spacing="20" visible="false" style="-fx-background-color: rgba(0,0,0,0.85);">
+         <children>
+            <ImageView fx:id="tutorialImageView" fitHeight="600.0" preserveRatio="true"/>
+
+            <HBox alignment="CENTER" spacing="40">
+               <children>
+                  <Button fx:id="backToHome" mnemonicParsing="false" onAction="#handleHome" prefHeight="50.0" prefWidth="250.0" style="-fx-background-image: url('/com/sightreading/images/back_button.png'); -fx-background-color: transparent; -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
+                  <Button fx:id="navButton" mnemonicParsing="false" onAction="#handleTutorialNav" prefHeight="60.0" prefWidth="100.0" style="-fx-background-color: transparent; -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;">
+                     <graphic>
+                        <ImageView fx:id="navArrowImageView" fitHeight="50.0" preserveRatio="true" />
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
          </children>
       </VBox>
    
