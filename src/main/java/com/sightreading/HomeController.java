@@ -7,6 +7,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import java.io.IOException;
@@ -21,6 +24,13 @@ public class HomeController {
     
     // link to the transparent Pane in FXML to hold particles
     @FXML private Pane particlePane; 
+
+    // FXML variables for the tutorial pane
+    @FXML private VBox howToPlayOverlay;      // pop-up container for tutorial
+    @FXML private ImageView tutorialImageView; // tutorial pane
+    @FXML private ImageView navArrowImageView; // arrow button for navigation
+
+    private int tutorialPage = 1; // page tracker for tutorial navigation
 
     private List<Particle> particles = new ArrayList<>();
     private AnimationTimer particleTimer;
@@ -140,5 +150,46 @@ public class HomeController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // methods for how to tutorial pop-up
+    @FXML
+    private void handleHowToPlay() {
+        tutorialPage = 1;
+        updateTutorialUI();
+        howToPlayOverlay.setVisible(true); // show pop-up
+    }
+
+    @FXML
+    private void handleTutorialNav() {
+        if (tutorialPage == 1) {
+            tutorialPage = 2;
+        } else {
+            tutorialPage = 1;
+        }
+        updateTutorialUI();
+    }
+
+    // helper function to update photos
+    private void updateTutorialUI() {
+        String mainImg;
+        String arrowImg;
+
+        if (tutorialPage == 1) {
+            mainImg = "/com/sightreading/images/howTo_1.png";
+            arrowImg = "/com/sightreading/images/forward_arrow.png"; 
+        } else {
+            mainImg = "/com/sightreading/images/howTo_2.png";
+            arrowImg = "/com/sightreading/images/back_arrow.png";    
+        }
+
+    // set images set as imageview in fxml
+    tutorialImageView.setImage(new Image(getClass().getResourceAsStream(mainImg)));
+    navArrowImageView.setImage(new Image(getClass().getResourceAsStream(arrowImg)));
+    }
+
+    @FXML
+    private void handleHome() {
+        howToPlayOverlay.setVisible(false); // hide pop-up
     }
 }
