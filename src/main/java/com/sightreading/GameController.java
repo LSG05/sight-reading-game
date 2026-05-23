@@ -32,7 +32,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 public class GameController implements Initializable {
-
+    // Ui layout elements
     @FXML private AnchorPane rootPane; // Used to spawn floating text
     @FXML private ImageView sheetMusicView;
     @FXML private Rectangle hitBox;

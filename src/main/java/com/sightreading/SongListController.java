@@ -58,11 +58,12 @@ public class SongListController {
         // floating particles
         createParticles();
 
+        // hover sound effect
         try {
             URL soundUrl = getClass().getResource("/com/sightreading/audio/click.mp3");
             if (soundUrl != null) {
                 String source = soundUrl.toExternalForm();
-                System.out.println("Loading audio from: " + source); // Check your console for this!
+                System.out.println("Loading audio from: " + source); 
                 hoverSound = new AudioClip(source);
             } else {
                 System.err.println("CRITICAL: click.mp3 not found in resources!");
@@ -70,19 +71,6 @@ public class SongListController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        /* outdated hover sound effect
-        try {
-            URL soundUrl = getClass().getResource("/com/sightreading/audio/tick.wav");  // folder location
-            if (soundUrl != null) {
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundUrl);
-                hoverSound = AudioSystem.getClip();
-                hoverSound.open(audioStream);
-            }
-        } catch (Exception e) {
-            System.err.println("Native audio engine failed to open asset. Skipping hover audio.");
-        }
-            */
 
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(getClass().getResourceAsStream("/com/sightreading/catalog.json")))) {
