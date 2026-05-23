@@ -22,10 +22,10 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
       <Button fx:id="backButton" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleGoToSongs" text="" prefHeight="60.0" prefWidth="100.0" styleClass="menu-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/back_arrow.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;"
 />
 
-      <AnchorPane fx:id="sheetMusicPane" layoutX="200.0" layoutY="300.0" prefHeight="75.0" prefWidth="800.0">
+      <AnchorPane fx:id="sheetMusicPane" layoutX="0.0" layoutY="300.0" prefHeight="112.5" prefWidth="1200.0">
          <children>
-            <Rectangle fx:id="hitBox" arcHeight="4.0" arcWidth="4.0" fill="#4488FF" height="75.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-            <ImageView fx:id="sheetMusicView" fitHeight="75.0" fitWidth="800.0" layoutX="262.0" layoutY="-37.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" opacity="0.8"/>
+            <Rectangle fx:id="hitBox" arcHeight="4.0" arcWidth="4.0" fill="#4488FF" height="112.5" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+            <ImageView fx:id="sheetMusicView" fitHeight="112.5" fitWidth="1200.0" layoutX="0.0" layoutY="-37.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" opacity="0.8"/>
          </children>
       </AnchorPane>
      
