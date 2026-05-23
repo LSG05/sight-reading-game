@@ -76,6 +76,7 @@ public class GameController implements Initializable {
     private int previousScore = 0; // tracks the score to calculate point additions/deductions
 
     private final static int MISS_TOLERANCE_MS = 200; 
+    private final static double SCALE_FACTOR = 1.5; //scale factor to adjust image size
 
     // Input and UI handling, add ui controller soon
     private InputHandler inputHandler;
@@ -314,7 +315,7 @@ public class GameController implements Initializable {
         popup.setMouseTransparent(true); 
 
         // spawn it directly over the moving hit-box! 
-        double spawnX = 200 + hitBox.getTranslateX() - 15; 
+        double spawnX = hitBox.getTranslateX() - 22.5; //UPDATE: removed 200 and turned -15 to -22.5 as resized images start at x=0
         popup.setLayoutX(spawnX);
         popup.setLayoutY(250); 
 
@@ -361,26 +362,30 @@ public class GameController implements Initializable {
 
         // Handle end of song
         if (elapsedMs >= allNotes.get(allNotes.size() - 1).targetTimeMs) {
-            return allNotes.get(allNotes.size() - 1).pixelX;
+            return allNotes.get(allNotes.size() - 1).pixelX * SCALE_FACTOR; //UPDATE: apply scale factor to adjust for image size changes
         }
 
         NoteData prev = allNotes.get(activeIndex);
         NoteData next = allNotes.get(activeIndex + 1);
+        //applying scale factor to adjust for image size changes
+        double prevX = prev.pixelX * SCALE_FACTOR; 
+        double nextX = next.pixelX * SCALE_FACTOR;
+
 
         // 3. Determine if we are moving to a new line
         // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line!
         if (next.pixelX < prev.pixelX) {
-            double fakeNextX = 850; 
+            double fakeNextX = 850 * SCALE_FACTOR; //UPDATE: apply scale factor to adjust for image size changes
             double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-            return prev.pixelX + ratio * (fakeNextX - prev.pixelX) - 15;
+            return prevX + ratio * (fakeNextX - prevX) - 22.5; //UPDATE: used scaled prevX and fakeNextX
         }
 
         // 4. Standard Interpolation
         double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-        return prev.pixelX + ratio * (next.pixelX - prev.pixelX) - 15;
+        return prevX + ratio * (nextX - prevX) - 22.5; //UPDATE: used scaled prevX and nextX
     }
 
-    //new update line index method
+    //new update line index methods
     private void advanceNoteIndex() {
         LineData currentLine = songData.lines.get(currentLineIndex);
         NoteData currentNote = currentLine.notes.get(noteIndexInLine);
