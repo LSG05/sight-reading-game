@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javafx.concurrent.Task; // add for threading
+import javafx.scene.Parent;
 
 public class HomeController {
 
@@ -133,12 +135,34 @@ public class HomeController {
         } else {
             errorLabel.setText(""); 
             Main.playerName = enteredName;
+
+            Task<Parent> loadTask = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                // calls load fxml on a background thread to avoid freezing or lags
+                return Main.loadFXML("song-list");
+            }
+            };
+
+            loadTask.setOnSucceeded(e -> {
+                cleanup(); // remove particles when switching scenes
+                Main.getScene().setRoot(loadTask.getValue());
+                loadTask.getValue().requestFocus(); // request focus 
+            });
+
+            Thread thread = new Thread(loadTask);
+            thread.setName("Home-To-SongList-Thread");
+            thread.setDaemon(true);
+            thread.start();
+
+            /* outdated logic 
             cleanup(); // remove particles when switching scenes
             try {
                 Main.setRoot("song-list");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
         }
     }
 
