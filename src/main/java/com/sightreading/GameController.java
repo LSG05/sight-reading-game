@@ -67,9 +67,6 @@ public class GameController implements Initializable {
     private String songFolder;
     private AudioService audioService;
 
-    // Declare variables from masterclock and audioservice
-    private MasterClock masterClock = new MasterClock();
-
     private int noteIndexInLine = 0;
     private int currentLineIndex = 0;
     private int previousScore = 0; // tracks the score to calculate point additions/deductions
@@ -87,7 +84,6 @@ public class GameController implements Initializable {
     private AnimationTimer animationTimer = new AnimationTimer() {
         @Override
         public void handle(long now){
-            if (!masterClock.isRunning()) return;
             long elapsedMs = (long) audioService.getCurrentTimeMs(); 
             
             checkNoteExpiry(elapsedMs);
@@ -172,7 +168,6 @@ public class GameController implements Initializable {
         // Load Audio
         audioService.loadSong();
         audioService.playSong();
-        masterClock.start();
         animationTimer.start();
 
         // Set focus to the sheet music pane so it can receive key events immediately
@@ -488,7 +483,6 @@ public class GameController implements Initializable {
     private void cleanup() {
         if (animationTimer != null) animationTimer.stop();
         if (audioService != null) audioService.stopSong();
-        if (masterClock != null) masterClock.stop();
         if (particleTimer != null) particleTimer.stop();
     }
 
@@ -536,7 +530,6 @@ public class GameController implements Initializable {
     public void handleSongFinished(){
         // Stop all timers/clocks
         audioService.stopSong();
-        masterClock.stop();
         animationTimer.stop();
     
         // Grab the final score from the ScoreManager
@@ -563,12 +556,6 @@ public class GameController implements Initializable {
     public NoteData getCurrentNote() {
         return songData.lines.get(currentLineIndex).notes.get(noteIndexInLine);
     }
-
-
-    public MasterClock getMasterClock() {
-        return this.masterClock;
-    }
-
 
     public ScoreManager getScoreManager() {
         return this.scoreManager;
