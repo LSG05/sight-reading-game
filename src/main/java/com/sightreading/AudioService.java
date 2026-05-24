@@ -10,6 +10,8 @@ public class AudioService {
     private MediaPlayer songPlayer;
     private String songPathString;
     private GameController gameController;
+
+    // Constructor takes in song path and gamecontroller reference
     public AudioService(String urlAudioString, GameController gameController){
         this.songPathString = urlAudioString;
         this.gameController = gameController;
@@ -21,12 +23,11 @@ public class AudioService {
                 Media media = new Media(musicUrl.toExternalForm());
                 songPlayer = new MediaPlayer(media);
 
-                // attach listener for when song ends
+                // Attach listener for when song ends
                 songPlayer.setOnEndOfMedia(() -> {
                     System.out.println("Audio Thread: Song has physically finished.");
-                    // Use Platform.runLater because the MediaPlayer thread is NOT the UI thread
                     Platform.runLater(() -> {
-                        // trigger end of song actions in the GameController
+                        // Trigger end of song actions in the GameController
                         gameController.handleSongFinished();
                     });
                 });
@@ -69,9 +70,7 @@ public class AudioService {
         }
     }
 
-    // future note: pause and resume
-
-    // Added method to get current time of the song for timing error calculations in InputHandler
+    // Method to get current time of the song for timing error calculations in InputHandler
     public double getCurrentTimeMs(){
         if (songPlayer != null && songPlayer.getStatus() == Status.PLAYING) {
             return songPlayer.getCurrentTime().toMillis();
@@ -79,7 +78,7 @@ public class AudioService {
         return 0.0;
     }
 
-    // Add for hover
+    // For hover preview audio over song list
     public void playPreview(double seconds) {
     if (songPlayer != null) {
         songPlayer.setOnReady(() -> {

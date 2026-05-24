@@ -16,8 +16,7 @@ public class ScoreManager {
         String rating = "OKAY";
         long absError = Math.abs(timingError);
 
-        // update rating based on timing error categories
-        //UPDATE: fixed logic so some early hits are not registered as perfect
+        // Update rating based on timing error categories
         if (absError <= 50) {
             rating = "PERFECT";
         } else if (absError <= 100) {
@@ -28,28 +27,28 @@ public class ScoreManager {
             rating = "OKAY";
         }
 
-        // penalty based on timing error (linear scale)
+        // Penalty based on timing error (linear scale)
         double penalty = (absError / 190.0) * 80.0;
         int basePoints = (int) (100 - penalty);
 
-        // multiplier logic based on current combo
+        // Multiplier logic based on current combo
         this.multiplier = (combo / 10) + 1;
         if (this.multiplier > 10) {
             this.multiplier = 10; // Cap multiplier at 10x
         }
 
-        // score update
+        // Score update
         this.score += (basePoints * multiplier);
         this.combo++;
 
         // Update UI
-        // final to "lock" values in temporarily while inserted into platform runlater function
+        // Final to "lock" values in temporarily while inserted into platform runlater function
         final int currentScore = this.score;
         final int currentCombo = this.combo;
         final String currentRating = rating;
 
         Platform.runLater(() -> {
-            gameController.updateUI(currentScore, currentCombo, currentRating); // method to be updated later
+            gameController.updateUI(currentScore, currentCombo, currentRating); 
         });
 
     }
@@ -57,7 +56,7 @@ public class ScoreManager {
     public void registerMiss() {
         this.combo = 0;
         this.multiplier = 1;
-        this.score =  Math.max(0, this.score - 50); // flat penalty for miss
+        this.score =  Math.max(0, this.score - 50); // Flat penalty for miss
 
         Platform.runLater(() -> {
             gameController.updateUI(this.score, this.combo, "MISS");
@@ -67,14 +66,14 @@ public class ScoreManager {
     public void registerStray() {
         this.combo = 0;
         this.multiplier = 1;
-        this.score =  Math.max(0, this.score - 15); // smaller penalty for stray notes
+        this.score =  Math.max(0, this.score - 15); // Smaller penalty for stray notes
 
         Platform.runLater(() -> {
             gameController.updateUI(this.score, this.combo, "STRAY");
         });
     }
     
-    // added so the GameController can retrieve the final score at the end of the song
+    // For GameController to retrieve the final score at the end of the song
     public int getScore() {
         return this.score;
     }

@@ -2,7 +2,7 @@ package com.sightreading;
 
 import javafx.scene.input.KeyEvent;
 
-// responsible for keyboard/input events
+// Responsible for keyboard/input events
 public class InputHandler {
     private final GameController gameController;
     
