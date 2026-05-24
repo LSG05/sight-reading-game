@@ -41,15 +41,15 @@ xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:contr
          </children>
       </VBox>
 
-      <HBox alignment="CENTER" layoutY="720.0" prefWidth="1200.0" spacing="25.0" mouseTransparent="true">
+      <HBox alignment="CENTER" layoutY="690.0" prefWidth="1200.0" spacing="0.0" mouseTransparent="true">
          <children>
-            <ImageView fx:id="btnC" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/C.png" /></image></ImageView>
-            <ImageView fx:id="btnD" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/D.png" /></image></ImageView>
-            <ImageView fx:id="btnE" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/E.png" /></image></ImageView>
-            <ImageView fx:id="btnF" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/F.png" /></image></ImageView>
-            <ImageView fx:id="btnG" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/G.png" /></image></ImageView>
-            <ImageView fx:id="btnA" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/A.png" /></image></ImageView>
-            <ImageView fx:id="btnB" fitHeight="90.0" fitWidth="90.0" preserveRatio="true"><image><Image url="@images/B.png" /></image></ImageView>
+            <ImageView fx:id="btnC" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/C.png" /></image></ImageView>
+            <ImageView fx:id="btnD" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/D.png" /></image></ImageView>
+            <ImageView fx:id="btnE" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/E.png" /></image></ImageView>
+            <ImageView fx:id="btnF" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/F.png" /></image></ImageView>
+            <ImageView fx:id="btnG" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/G.png" /></image></ImageView>
+            <ImageView fx:id="btnA" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/A.png" /></image></ImageView>
+            <ImageView fx:id="btnB" fitHeight="171.0" fitWidth="171.0" preserveRatio="true"><image><Image url="@images/B.png" /></image></ImageView>
          </children>
       </HBox>
 

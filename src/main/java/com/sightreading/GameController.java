@@ -472,13 +472,13 @@ public class GameController implements Initializable {
 
         // visual feedback for the letter buttons
         switch (event.getCode()) {
-            case C: triggerKeyGlow(btnC, Color.web("#e883ab")); break; // Pink
-            case D: triggerKeyGlow(btnD, Color.web("#3866b3")); break; // Blue
-            case E: triggerKeyGlow(btnE, Color.web("#8e46b3")); break; // Purple
-            case F: triggerKeyGlow(btnF, Color.web("#5db069")); break; // Green
-            case G: triggerKeyGlow(btnG, Color.web("#f4d610")); break; // Yellow
-            case A: triggerKeyGlow(btnA, Color.web("#bf291e")); break; // Red
-            case B: triggerKeyGlow(btnB, Color.web("#eb8731")); break; // Orange
+            case C: triggerKeyGlow(btnC, Color.web("#3866b3")); break; // Blue
+            case D: triggerKeyGlow(btnD, Color.web("#8e46b3")); break; // Purple
+            case E: triggerKeyGlow(btnE, Color.web("#e883ab")); break; // Pink
+            case F: triggerKeyGlow(btnF, Color.web("#eb8731")); break; // Orange
+            case G: triggerKeyGlow(btnG, Color.web("#bf291e")); break; // Red
+            case A: triggerKeyGlow(btnA, Color.web("#5db069")); break; // Green
+            case B: triggerKeyGlow(btnB, Color.web("#f4d610")); break; // Yellow
             default: break; 
         }
 
