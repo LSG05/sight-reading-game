@@ -5,9 +5,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -125,6 +127,27 @@ public class SongListController {
             System.err.println("Could not load custom Canva button asset. Check the file path.");
         }
 
+        // new version 
+        carouselBox.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                Platform.runLater(() -> {
+                    if (!carouselBox.getChildren().isEmpty()) {
+                        StackPane firstCard = (StackPane) carouselBox.getChildren().get(0);
+                        
+                        // ensure the card is focusable and request it
+                        firstCard.setFocusTraversable(true);
+                        firstCard.requestFocus();
+                        
+                        // trigger visual focus effect
+                        updateCarouselFocus(firstCard);
+                        
+                        // reset scroll to the first card
+                        carouselScrollPane.setHvalue(0);
+                    }
+                });
+            }
+        });
+        /* 
         // set first card as the default
         javafx.application.Platform.runLater(() -> {
             if (!carouselBox.getChildren().isEmpty()) {
@@ -133,6 +156,7 @@ public class SongListController {
                 updateCarouselFocus(firstCard);
             }
         });
+        */
     }
 
     // PARTICLES
@@ -365,22 +389,64 @@ public class SongListController {
     private void startGame(String songId) {
         System.out.println("Starting song: " + songId);
         Main.selectedSongId = songId;       // song will change based on song ID
+
+        Task<Parent> loadTask = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                // calls load fxml on a background thrad to avoid freezing or lags
+                return Main.loadFXML("game");
+            }
+            };
+
+            loadTask.setOnSucceeded(e -> {
+                cleanup(); // remove particles when switching scenes
+                Main.getScene().setRoot(loadTask.getValue());
+                loadTask.getValue().requestFocus(); // request focus 
+            });
+
+            Thread thread = new Thread(loadTask);
+            thread.setName("SongList-To-Game-Thread");
+            thread.setDaemon(true);
+            thread.start();
+
+        /* outdated no new thread logic
         cleanup(); // stop particles
         try {
             Main.setRoot("game");
         } catch (IOException e) {
             e.printStackTrace();
         }
+            */
     }
 
     @FXML
     private void handleBack(ActionEvent event) {
+        Task<Parent> loadTask = new Task<>() {
+            @Override
+            protected Parent call() throws Exception {
+                return Main.loadFXML("home");
+            }
+        };
+
+        loadTask.setOnSucceeded(e -> {
+            cleanup();
+            Main.getScene().setRoot(loadTask.getValue());
+        });
+
+        Thread thread = new Thread(loadTask);
+        thread.setName("Back-To-Home-Thread");
+        thread.setDaemon(true);
+        thread.start();
+
+
+        /* outdated logic 
         cleanup(); // stop particles
         try {
             Main.setRoot("home");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
 
     private static class SongData {

@@ -28,12 +28,17 @@ public class Main extends Application {
         scene.setRoot(loadFXML(fxml));
     }
 
-    private static Parent loadFXML(String fxml) throws IOException {
+    public static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/com/sightreading/" + fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    // getter for scene, to set root from other controllers
+    public static Scene getScene() {
+        return scene;
     }
 }
