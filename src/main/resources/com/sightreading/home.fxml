@@ -46,7 +46,7 @@
                <children>
                   <Button fx:id="playButton" mnemonicParsing="false" onAction="#handlePlay" prefHeight="200.0" prefWidth="500.0" styleClass="custom-canva-button" />
                   <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="76.0" prefWidth="325.0" styleClass="custom-canva-button" />
-                  <Button fx:id="howToPlayButton" mnemonicParsing="false" onAction="#handleHowToPlay" prefHeight="76.0" prefWidth="325.0" styleClass="custom-canva-button" />
+                  <Button fx:id="howToPlayButton" mnemonicParsing="false" onAction="#handleHowToPlay" prefHeight="76.0" prefWidth="325.0" styleClass="custom-canva-button" style="-fx-background-color: transparent; -fx-background-image: url('/com/sightreading/images/howto.png'); -fx-background-size: contain; -fx-background-position: center; -fx-background-repeat: no-repeat; -fx-cursor: hand;" />
                </children>
             </VBox>
 
