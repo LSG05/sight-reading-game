@@ -419,8 +419,6 @@ public class GameController implements Initializable {
 
     private void updateLineDisplay() {
         long elapsedMs = (long) audioService.getCurrentTimeMs();
-        LineData lineData = songData.lines.get(currentLineIndex);
-        NoteData lastNoteOfLine = lineData.notes.get(lineData.notes.size() - 1);
 
         if (currentLineIndex > 0) {
             LineData prevLine = songData.lines.get(currentLineIndex - 1);
