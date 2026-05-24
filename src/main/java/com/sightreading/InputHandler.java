@@ -20,19 +20,19 @@ public class InputHandler {
         System.out.println("Current note: " + (currentNote != null ? currentNote.noteName : "null") + ", processed: " + (currentNote != null ? currentNote.processed : "N/A"));
         System.out.println("DEBUG: Key Pressed: " + keyPressed + " | Target Note: " + currentNote.noteName + " (elapsed: " + currentTime + "ms, target: " + currentNote.targetTimeMs + "ms)");
     
-        // 1. Anti-Cheat: Only allow hit if note exists and isn't processed
+        // Anti-Cheat: Only allow hit if note exists and isn't processed
         if (currentNote == null || currentNote.processed) {
             gameController.getScoreManager().registerStray(); 
             gameController.triggerMissFeedback(); // Flashes red for button mashing
             return;
         }
 
-        // 2. Key Validation: Check if the key matches the note name
+        // Key Validation: Check if the key matches the note name
         if (currentNote.noteName.equalsIgnoreCase(keyPressed)) {
-            // 3. Calculate timing error
+            // Calculate timing error
             long timingError = currentTime - currentNote.targetTimeMs;
 
-            // 4. Register the hit
+            // Register the hit
             currentNote.processed = true;
             currentNote.isHit = true;
             gameController.getScoreManager().registerHit(timingError);
