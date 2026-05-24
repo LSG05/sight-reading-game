@@ -55,7 +55,7 @@ public class GameController implements Initializable {
     // Interactive Keyboard Elements
     @FXML private ImageView btnC, btnD, btnE, btnF, btnG, btnA, btnB;
 
-    // gradient objects for the cinematic vignette glow
+    // Gradient objects for the cinematic vignette glow
     private RadialGradient hitGradient;
     private RadialGradient missGradient;
 
@@ -77,7 +77,7 @@ public class GameController implements Initializable {
     private final static int MISS_TOLERANCE_MS = 200; 
     private final static double SCALE_FACTOR = 1.5; //scale factor to adjust image size
 
-    // Input and UI handling, add ui controller soon
+    // Input and UI handling
     private InputHandler inputHandler;
 
     // Initialize ScoreManager with reference to this GameController for UI updates
@@ -92,14 +92,14 @@ public class GameController implements Initializable {
             
             checkNoteExpiry(elapsedMs);
 
-            //move index forward once note is processed
+            // Move index forward once note is processed
             advanceNoteIndex();
 
             double computedX = computeHitBox(elapsedMs);
             setHitBoxX(computedX);
             updateLineDisplay();
 
-            // End Game Trigger
+            // End game Trigger
             int lastLine = songData.lines.size() - 1;
             int lastNote = songData.lines.get(lastLine).notes.size() - 1;
             NoteData veryLastNote = songData.lines.get(lastLine).notes.get(lastNote);
@@ -122,9 +122,9 @@ public class GameController implements Initializable {
     
         audioService = new AudioService(songPathString, this);
 
-        // image bg
+        // Image background
         try {
-            // loads song bg depending on selected song
+            // Loads song background depending on selected song
             String bgFileName = songId + "_bg.jpg"; 
             URL imageUrl = getClass().getResource("/com/sightreading/images/" + bgFileName);
             
@@ -137,14 +137,14 @@ public class GameController implements Initializable {
             e.printStackTrace();
         }
         
-        // particles
+        // Particles
         createParticles();
 
         songData = NoteLoader.load(songFolder);
 
         preloadAllImages();
 
-        // 3. Display the first line
+        // Display the first line
         if (!preloadedImages.isEmpty()) {
             sheetMusicView.setImage(preloadedImages.get(0));
         }
@@ -169,14 +169,13 @@ public class GameController implements Initializable {
         
         flashOverlay.setEffect(null); 
 
-        // 6. Load Audio
+        // Load Audio
         audioService.loadSong();
         audioService.playSong();
         masterClock.start();
         animationTimer.start();
 
-        // 8. Closing Methods
-        // set focus to the sheet music pane so it can receive key events immediately
+        // Set focus to the sheet music pane so it can receive key events immediately
         Platform.runLater(() -> {
             sheetMusicView.setFocusTraversable(true); 
             sheetMusicView.requestFocus();           
@@ -273,20 +272,20 @@ public class GameController implements Initializable {
         ft.play();
     }
 
-    // called automatically by ScoreManager when a hit/miss happens
+    // Called automatically by ScoreManager when a hit/miss happens
     public void updateUI(int score, int combo, String rating) {
         Platform.runLater(() -> {
-            // 1. update the static Hub labels
+            // Update the static hub labels
             scoreLabel.setText("Score: " + score);
             comboLabel.setText("Combo: " + combo);
 
-            // 2. calculate point difference
+            // Calculate point difference
             int delta = score - previousScore;
             
-            // 3. ALWAYS spawn floating text, even if score didn't change 
+            // Always spawn floating text, even if score didn't change 
             spawnFloatingScore(delta, rating);
             
-            previousScore = score; // update history for the next hit
+            previousScore = score; // Update history for the next hit
         });
     }
 
@@ -307,20 +306,20 @@ public class GameController implements Initializable {
         Label popup = new Label(finalString);
         popup.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         
-        // green/blue for positive, red for misses or negative points
+        // Green/blue for positive, red for misses or negative points
         String color = (rating.equals("MISS") || rating.equals("STRAY") || delta < 0) ? "#ff4444" : "#44ff44"; 
         popup.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
         popup.setEffect(new javafx.scene.effect.DropShadow(4, Color.BLACK));
         popup.setMouseTransparent(true); 
 
-        // spawn it directly over the moving hit-box! 
-        double spawnX = hitBox.getTranslateX() - 22.5; //UPDATE: removed 200 and turned -15 to -22.5 as resized images start at x=0
+        // Spawn it directly over the moving hitbox
+        double spawnX = hitBox.getTranslateX() - 22.5; // UPDATE: removed 200 and turned -15 to -22.5 as resized images start at x=0
         popup.setLayoutX(spawnX);
         popup.setLayoutY(250); 
 
         rootPane.getChildren().add(popup);
 
-        // animation: float up while fading out
+        // Animation: float up while fading out
         TranslateTransition floatUp = new TranslateTransition(Duration.millis(500), popup);
         floatUp.setByY(-40); 
 
@@ -344,13 +343,13 @@ public class GameController implements Initializable {
     }
 
     public double computeHitBox(long elapsedMs) {
-        // 1. Flatten all notes to easily find where we are in time
+        // Flatten all notes to easily find where we are in time
         List<NoteData> allNotes = new ArrayList<>();
         for (LineData line : songData.lines) {
             allNotes.addAll(line.notes);
         }
 
-        // 2. Find which two notes the current time falls between
+        // Find which two notes the current time falls between
         int activeIndex = 0;
         for (int i = 0; i < allNotes.size() - 1; i++) {
             if (elapsedMs >= allNotes.get(i).targetTimeMs && elapsedMs < allNotes.get(i + 1).targetTimeMs) {
@@ -361,30 +360,30 @@ public class GameController implements Initializable {
 
         // Handle end of song
         if (elapsedMs >= allNotes.get(allNotes.size() - 1).targetTimeMs) {
-            return allNotes.get(allNotes.size() - 1).pixelX * SCALE_FACTOR; //UPDATE: apply scale factor to adjust for image size changes
+            return allNotes.get(allNotes.size() - 1).pixelX * SCALE_FACTOR; // Apply scale factor to adjust for image size changes
         }
 
         NoteData prev = allNotes.get(activeIndex);
         NoteData next = allNotes.get(activeIndex + 1);
-        //applying scale factor to adjust for image size changes
+        // Applying scale factor to adjust for image size changes
         double prevX = prev.pixelX * SCALE_FACTOR; 
         double nextX = next.pixelX * SCALE_FACTOR;
 
 
-        // 3. Determine if we are moving to a new line
-        // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line!
+        // Determine if we are moving to a new line
+        // If the next note's X is smaller than the prev note's X, it means it wrapped around to a new line
         if (next.pixelX < prev.pixelX) {
-            double fakeNextX = 850 * SCALE_FACTOR; //UPDATE: apply scale factor to adjust for image size changes
+            double fakeNextX = 850 * SCALE_FACTOR; // Apply scale factor to adjust for image size changes
             double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-            return prevX + ratio * (fakeNextX - prevX) - 22.5; //UPDATE: used scaled prevX and fakeNextX
+            return prevX + ratio * (fakeNextX - prevX) - 22.5; // Used scaled prevX and fakeNextX
         }
 
-        // 4. Standard Interpolation
+        // Standard Interpolation
         double ratio = (double)(elapsedMs - prev.targetTimeMs) / (next.targetTimeMs - prev.targetTimeMs);
-        return prevX + ratio * (nextX - prevX) - 22.5; //UPDATE: used scaled prevX and nextX
+        return prevX + ratio * (nextX - prevX) - 22.5; // Used scaled prevX and nextX
     }
 
-    //new update line index methods
+    // Update line index methods
     private void advanceNoteIndex() {
         LineData currentLine = songData.lines.get(currentLineIndex);
         NoteData currentNote = currentLine.notes.get(noteIndexInLine);
@@ -404,7 +403,7 @@ public class GameController implements Initializable {
             nextNoteTime = songData.lines.get(currentLineIndex + 1).notes.get(0).targetTimeMs; 
         }
 
-        // index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
+        // Index will advance if it is 190 ms before the next note (the tolerance for an okay hit), and if it hasn't already switched 
         // for this note (to prevent multiple advances for the same note due to animationtimer's frequent calls)
         if (elapsedTime >= nextNoteTime - 190 && !currentNote.isSwitched) {
             currentNote.isSwitched = true; 
@@ -436,7 +435,7 @@ public class GameController implements Initializable {
         LineData currentLine = songData.lines.get(currentLineIndex);
         NoteData currentNote = currentLine.notes.get(noteIndexInLine);
 
-        //If clock has passed the note's target time by more than the miss tolerance, mark it as missed and move on
+        // If clock has passed the note's target time by more than the miss tolerance, mark it as missed and move on
         if (!currentNote.processed && elapsedMS > (currentNote.targetTimeMs + MISS_TOLERANCE_MS)) {
             currentNote.processed = true;
             currentNote.isHit = false; 
@@ -454,7 +453,7 @@ public class GameController implements Initializable {
         keyView.setEffect(glow);
         keyView.setTranslateY(5); // Simulate a physical button getting pushed down
 
-        // turn the glow off quickly like a real piano key
+        // Turn the glow off quickly like a real piano key
         PauseTransition pause = new PauseTransition(Duration.millis(150));
         pause.setOnFinished(e -> {
             keyView.setEffect(null);
@@ -467,7 +466,7 @@ public class GameController implements Initializable {
     public void onKeyPressed(KeyEvent event) {
         if (resultsOverlay.isVisible()) return;
 
-        // visual feedback for the letter buttons
+        // Visual feedback for the letter buttons
         switch (event.getCode()) {
             case C: triggerKeyGlow(btnC, Color.web("#3866b3")); break; // Blue
             case D: triggerKeyGlow(btnD, Color.web("#8e46b3")); break; // Purple
@@ -479,15 +478,13 @@ public class GameController implements Initializable {
             default: break; 
         }
 
-        // pass the input to existing game logic
+        // Pass the input to existing game logic
         inputHandler.handleKeyPressed(event);
     }
  
-    // --- Phase 3 Added Cleanup ---
+    // Cleanup
+    // Stops all background threads
 
-    /**
-     * STOPS all background threads. 
-     */
     private void cleanup() {
         if (animationTimer != null) animationTimer.stop();
         if (audioService != null) audioService.stopSong();
@@ -535,22 +532,22 @@ public class GameController implements Initializable {
         }
     }
 
-    // handle song finished
+    // Handle song finished
     public void handleSongFinished(){
         // Stop all timers/clocks
         audioService.stopSong();
         masterClock.stop();
         animationTimer.stop();
     
-        // grab the final score from the ScoreManager
+        // Grab the final score from the ScoreManager
         int finalScore = scoreManager.getScore();
         System.out.println("SONG FINISHED! Final Score: " + finalScore);
 
-        // save to LeaderboardManager
+        // Save to LeaderboardManager
         String pName = (Main.playerName != null && !Main.playerName.isEmpty()) ? Main.playerName : "Guest";
         LeaderboardManager.addScore(pName, finalScore);
         
-        // trigger the Overlay Fade-In instead of changing the screen
+        // Trigger the Overlay Fade-In instead of changing the screen
         Platform.runLater(() -> {
             finalScoreLabel.setText(String.valueOf(finalScore)); // Inject the actual score number
             resultsOverlay.setVisible(true);
@@ -562,7 +559,7 @@ public class GameController implements Initializable {
         });
     }
 
-    // Add these to GameController.java so InputHandler can see them
+    // Visibility of current note for InputHandler 
     public NoteData getCurrentNote() {
         return songData.lines.get(currentLineIndex).notes.get(noteIndexInLine);
     }
@@ -577,12 +574,12 @@ public class GameController implements Initializable {
         return this.scoreManager;
     }
 
-    // Added getter for AudioService to allow InputHandler to access current time for timing error calculations
+    // Getter for AudioService to allow InputHandler to access current time for timing error calculations
     public AudioService getAudioService() {
         return this.audioService;
     }
 
-    // Add reset function for song states
+    // Reset function for song states
     public void resetSongStates(){
         // Reset the indices
         this.noteIndexInLine = 0;

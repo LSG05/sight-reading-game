@@ -23,7 +23,7 @@ public class InputHandler {
         // 1. Anti-Cheat: Only allow hit if note exists and isn't processed
         if (currentNote == null || currentNote.processed) {
             gameController.getScoreManager().registerStray(); 
-            gameController.triggerMissFeedback(); // Flashes Red for button mashing!
+            gameController.triggerMissFeedback(); // Flashes red for button mashing
             return;
         }
 
@@ -36,14 +36,14 @@ public class InputHandler {
             currentNote.processed = true;
             currentNote.isHit = true;
             gameController.getScoreManager().registerHit(timingError);
-            gameController.triggerHitFeedback(); // Flashes Blue for success!
+            gameController.triggerHitFeedback(); // Flashes blue for success
             System.out.println("HIT registered for note: " + currentNote.noteName);
         } else {
             // If the key doesn't match, it's a miss
             currentNote.processed = true;
             currentNote.isHit = false;
             gameController.getScoreManager().registerMiss();
-            gameController.triggerMissFeedback(); // Flashes Red for mistake!
+            gameController.triggerMissFeedback(); // Flashes red for mistake
             System.out.println("MISS registered for note: " + currentNote.noteName + " (pressed: " + keyPressed + ")");
         }
     }
